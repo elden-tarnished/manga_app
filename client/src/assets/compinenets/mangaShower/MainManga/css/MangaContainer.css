@@ -1,0 +1,21 @@
+.body{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.manga__container{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  margin:30px;
+}
+
+@media (max-width: 768px) {
+  .manga__container{
+    gap: 10px;
+    margin: 20px;
+  }
+}

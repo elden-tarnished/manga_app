@@ -1,0 +1,38 @@
+
+.card--skel{
+  width: 184px ;
+  height: 280px;
+  border-radius: 16px;
+
+  position: relative;
+  flex-shrink: 0;
+
+  background: linear-gradient(90deg, rgb(215, 194, 219) 0%, rgb(228, 217, 231) 50%, rgb(215, 194, 219) 100%);
+  background-size: 200% 100%;
+}
+
+.title--skel{
+  height: 34.5px;
+  width: 168px;
+  margin: 5px 8px;
+  border-radius: 10px;
+
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+
+  background: linear-gradient(90deg, rgb(172, 159, 175) 10%, rgb(199, 182, 204) 50%, rgb(172, 159, 175) 100%);  
+  background-size: 200% 100%;
+}
+@media (max-width: 768px) {
+  .card--skel{
+    width: 147.2px;
+    height: 224px;
+  }
+  .title--skel{
+    height: 32px;
+    width: 131.2px;
+  }
+  
+}
