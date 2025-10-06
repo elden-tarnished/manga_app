@@ -691,7 +691,7 @@ app.get("/manga/:mangaId", async(req, res) => {
     }
 });
 
-app.get('/manga/search', async (req, res) => {
+app.get('/search', async (req, res) => {
     try {
         const query = req.query.q;
         if(!query) return(res.status(400).json({error: 'Search query "q" is needed '}));

@@ -174,8 +174,7 @@ export function MangaContainer() {
         status={e.status}
         synopsis={e.synopsis}
         ></MangaCard>
-      )}
-
+      )}  
     </div>
       <div ref={IntersectionObserverRef} style={{width: '300px', height: '2px', backgroundColor: 'black'}}></div>
   { staticLoading? <h1>pagination loading...</h1>:

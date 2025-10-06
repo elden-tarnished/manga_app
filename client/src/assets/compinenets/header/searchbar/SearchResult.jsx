@@ -3,8 +3,9 @@ import { useGSAP } from "@gsap/react";
 import  './SearchResult.css';
 
 
-const SearchResult = (props) => {
-  let {title, main_image_medium, status, mean, synopsis, start_date='', end_date='', media_type} = props;
+export function SearchResult(props) {
+  console.log('title: ', props)
+  const {title, main_image_medium, status, mean, synopsis, start_date='', end_date='', media_type} = props;
 
   const [isTouchOrMobile, setIsTouchOrMobile] = useState(false)
 
@@ -37,7 +38,7 @@ const SearchResult = (props) => {
 
 
   return (
-  <div className='whole'>
+  <div className='whole__search'>
     <div className='img-container'>
       
     </div>
@@ -78,4 +79,3 @@ const SearchResult = (props) => {
   </div>)
 }
 
-export default SearchResult;

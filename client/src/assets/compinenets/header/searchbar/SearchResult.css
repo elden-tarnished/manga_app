@@ -1,17 +1,17 @@
-.whole{
+.whole__search{
   display: flex;
   flex-direction: column;
   width: 50vw;
   margin: 5px;
 }
 @media (max-width:833px) {
-  .whole{
+  .whole__search{
     width: 90vw;
     font-size: 0.9rem;
   }
 }
 @media (max-width:380px){
-  .whole{
+  .whole__search{
     width: 98vw;
     font-size: 0.85rem;
   }
