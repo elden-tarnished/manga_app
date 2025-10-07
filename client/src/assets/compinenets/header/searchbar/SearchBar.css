@@ -1,0 +1,25 @@
+.search-bar__form {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+    border: 1px solid black;
+    border-radius: 999px;
+
+}
+.search-bar__input {
+    border: none;
+    margin: 0 10px;
+}
+.search-bar__input:focus {
+    border: none;
+    outline: none;
+}
+.search-bar__button {
+    border: none;
+    border-radius: 999px;
+    padding: 5px;
+    height: 50px;
+
+
+}

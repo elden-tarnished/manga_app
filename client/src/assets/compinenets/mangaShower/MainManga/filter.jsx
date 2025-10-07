@@ -1,5 +1,5 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import {FilterContext} from './MangaContainer';
+import { useContext, useMemo } from "react";
+import { FilterContext} from "./context.js";
 import { FilterButton } from "./button";
 import './css/filter.css';
 
@@ -35,7 +35,7 @@ export function Filter({FilterOptions}) {
     type: setType,
     explicitGenre: setExplicitGenre
   }
-  const limits = ['25', '50', '54', '100', '200']
+  const limits = ['25', '50', '60', '100', '200']
   const directionValues = ['ASC', 'DESC'];
   const filtersKeys = Object.keys(FilterOptions).filter(e => e !== 'validOrder');
 
@@ -47,12 +47,13 @@ export function Filter({FilterOptions}) {
   [genre,theme,demographic,type,explicitGenre]);
 
   const selectedValuesSetter = useMemo(() => {
-    return {genre: tagCurrents[0],
+    return {
+    genre: tagCurrents[0],
     theme: tagCurrents[1],
     demographic: tagCurrents[2],
     type: tagCurrents[3],
     explicitGenre: tagCurrents[4],}
-  }, [genre,theme,demographic,type,explicitGenre])
+  }, [tagCurrents])
 
   const orderButtons = useMemo(() => {
     return FilterOptions.validOrder.map(item =>
@@ -90,19 +91,23 @@ export function Filter({FilterOptions}) {
 
   return (
     <div className="filter__container">
-      <div className="order__container">
-      <h1>Order</h1>
-      <div className="order-btn__container">{orderButtons}</div>
-      </div>
 
-      <div className="limit__container">
-      <h1>Limit</h1>
-      <div className="limit-btn__container">{limitButtons}</div>
-      </div>
+      <div className={'filter--horizontal__container'}>
+        <div className="order__container">
+          <h1>Order</h1>
+          <div className="order-btn__container">{orderButtons}</div>
+        </div>
 
-      <div className="direction__container">
-      <h1>direction</h1>
-      <div className="direction-btn__container">{directionButtons}</div>
+        <div className="limit__container">
+          <h1>Limit</h1>
+          <div className="limit-btn__container">{limitButtons}</div>
+        </div>
+
+        <div className="direction__container">
+          <h1>direction</h1>
+          <div className="direction-btn__container">{directionButtons}</div>
+        </div>
+
       </div>
 
       <div className="tags__container">{tagButtons}</div>

@@ -1,5 +1,5 @@
-import { useContext, useMemo } from "react";
-import { FilterContext } from "./MangaContainer";
+import { useContext } from "react";
+import {FilterContext} from "./context.js";
 import './css/Pagination.css';
 
 export function Pagination({maxPageNum}) {

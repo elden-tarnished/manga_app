@@ -1,21 +1,27 @@
 import { useGSAP } from '@gsap/react';
 import './css/button.css'
-import { useContext, useRef } from 'react';
+import {useLayoutEffect, useRef} from 'react';
+import {gsap} from "gsap";
 
 export function FilterButton({value, selectedValues, setter, filterType}) {
-  let isSelected = false ;
+
+  const buttonRef = useRef(null);
+  let isSelected = false;
   if (Array.isArray(selectedValues)){
-    isSelected = selectedValues.includes(value);
-  } 
+    isSelected = (selectedValues.includes(value));
+  }
   if (selectedValues===value) {
     isSelected = true
   }
-  const buttonRef = useRef(null);
+
   const tl = useRef(null);
+  const color = useRef(null);
 
-
+  const backgroundColor = useRef(null);
+  useLayoutEffect(() => {
+  }, [selectedValues, isSelected, value]);
     // func
-  function RandomNumGenretator(min, max, excludeMin, excludeMax, snapIncrement=1) {
+  function RandomNumGenerator(min, max, excludeMin, excludeMax, snapIncrement=1) {
     const unfiltered = Array.from({length: max - min + 1}, (_, i) => min + i)
     const excluded = Array.from({length: excludeMax - excludeMin + 1}, (_, i) => i + excludeMin);
     const filtered = unfiltered.filter(e => !(excluded.includes(e)))
@@ -26,35 +32,40 @@ export function FilterButton({value, selectedValues, setter, filterType}) {
 
   const {contextSafe} = useGSAP(() => {
     // const bgColor = buttonRef.current.getComputedStyle().backgroundColor;
-
+    color.current = 'white';
+    backgroundColor.current = 'black';
     const timeline = gsap.timeline({paused: true});
+
     timeline
-    .to(buttonRef.current, {
-      backgroundColor: 'black',
-      color: 'white',
-      duration: 0.2
-    })
-    .to(buttonRef.current, {
-      rotate: RandomNumGenretator(-10, 10, -3, 3),
-      duration: 0.4,
-      ease: 'back.out'
-    }, '+=-0.1')
+    // .to(buttonRef.current, {
+    //   rotate: RandomNumGenerator(-10, 10, -3, 3),
+    //   duration: 0.4,
+    //   ease: 'back.out'
+    // }, '+=-0.1')
     .to(buttonRef.current, {
       duration: 0.2,
       ease: 'power1',
+      borderColor: 'blue',
       borderRadius: '5px',
-      scale: 1.05,
-    }, '<')
+      color: 'blue',
+    })
+      .to(buttonRef.current, {
+        duration: 0.2,
+        scale: 1.05,
+        ease: 'back',
+      }, '<0.1')
+
 
     tl.current = timeline;
   }, {scope: buttonRef})
 
   const onMouseEnter = contextSafe(() => {
-    tl.current.play();
+    tl.current.play()
   });
   const onMouseLeave = contextSafe(() => {
-    tl.current.timeScale(2).reverse();
+    tl.current.timeScale(2).reverse()
   })
+
 
 
   const onClick = () => {
@@ -81,10 +92,11 @@ export function FilterButton({value, selectedValues, setter, filterType}) {
   const displayLabel = formatName();
 
   return(
-    <button className={`btn ${filterType} ${isSelected? 'active': ''}`} 
-    onClick={onClick} 
+    <button className={`btn ${filterType} ${isSelected? 'active': ''}`}
+    onClick={onClick}
     onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave} 
+    onMouseLeave={onMouseLeave}
+    // style={isSelected ? {backgroundColor: backgroundColor.current, color: color.current, borderRadius: 5} : {}}
     ref={buttonRef}>{displayLabel}</button>
   )
 }

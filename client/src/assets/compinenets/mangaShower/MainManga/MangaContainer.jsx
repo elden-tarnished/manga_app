@@ -1,19 +1,18 @@
-import { createContext, useState, useEffect, useMemo, useReducer, useRef } from 'react';
+import {useState, useEffect, useMemo, useRef} from 'react';
 import axios from 'axios';
 import {MangaCard} from './MangaCard';
 import { MangaCardSkel } from './skeletons/mangaCardSkel';
 import { Filter } from './filter';
 import { Pagination } from './pagination';
-
+import {FilterContext} from "./context.js";
 import './css/MangaContainer.css'
 
-export const FilterContext = createContext(null);
 
 export function MangaContainer() {
 
-  const mangaContainerRef = useRef();
-  const IntersectionObserverRef = useRef();
-  const [mangaContainerWidth, setMangaContainerWidth] = useState(null) 
+  const mangaContainerRef = useRef(null);
+  const IntersectionObserverRef = useRef(null);
+  // const [mangaContainerWidth, setMangaContainerWidth] = useState(null)
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +20,7 @@ export function MangaContainer() {
 
   const [mangas, setMangas] = useState([]);
   const [hasMore, setHasMore] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(30);
+  const [visibleCount, setVisibleCount] = useState(24);
 
   const [genre,         setGenre] =         useState([]);
   const [theme,         setTheme] =         useState([]);
@@ -29,12 +28,11 @@ export function MangaContainer() {
   const [demographic,   setDemographic] =   useState([]);
   const [type,          setType] =          useState([]);
   const [order,         setOrder] =         useState('');
-  const [limit,         setLimit] =         useState('54');
+  const [limit,         setLimit] =         useState('60');
   const [direction,     setDirection] =     useState('');
 
   const [page,          setPage] =          useState(1);
   
-  const apiDependencies = [type, theme, explicitGenre, order, demographic, genre, limit, direction, page]
 
   const filter = useMemo(() => ({
     genre,
@@ -59,10 +57,20 @@ export function MangaContainer() {
     setPage,
 
     loading
-  }), apiDependencies)
-  
+  }), [
+      loading,
+      page,
+      genre,
+      theme,
+      explicitGenre,
+      order,
+      demographic,
+      type,
+      limit,
+      direction,])
+
   useEffect(() => {
-    
+
     async function fetchData() {
       setLoading(true);
       try {
@@ -83,28 +91,40 @@ export function MangaContainer() {
             explicitGenre,
             demographic,
             type,
-            order, 
+            order,
             limit,
-            direction, 
-            page,   
+            direction,
+            page,
           }
         });
-        
+
         setVisibleCount(30);
         setData(result.data);
         setMangas(result.data.page);
         setHasMore(result.data.page.length > 30);
 
-          console.log('num: ',result.data.pageNum, result.data.maxPageNum)
+        console.log('num: ', result.data.pageNum, result.data.maxPageNum)
       } catch (err) {
-        console.log('eRRor',err);
+        console.log('eRRor', err);
       } finally {
         setLoading(false);
         setStaticLoading(false);
       }
     }
-    fetchData()
-  }, apiDependencies);
+
+    const timeOutId = setTimeout(() => fetchData().catch((err) => console.log(err)), 500)
+    return () => clearTimeout(timeOutId)
+
+  }, [
+    page,
+    genre,
+    theme,
+    explicitGenre,
+    order,
+    demographic,
+    type,
+    limit,
+    direction]);
 
 
   useEffect(() => {
@@ -125,11 +145,9 @@ export function MangaContainer() {
         console.log('visible Count',visibleCount)
         if(entry.isIntersecting){
           if (mangas.length >= visibleCount) {
-            console.log('mangas length'+mangas.length)
-            console.log('visible Count',visibleCount)
             setVisibleCount(prev => {
               if (mangas.length > visibleCount) {
-                return (prev + 20);
+                return (prev + 24);
               }
               else {
                 setHasMore(false);
@@ -159,7 +177,7 @@ export function MangaContainer() {
     }
     <div className='manga__container' ref={mangaContainerRef}>
       {loading ? Array.from({length: visibleCount}, (_, i) => <MangaCardSkel key={i}/>) :
-        visibleMangas.map( (e)=> 
+        visibleMangas.map( (e)=>
         <MangaCard
         key={e.id}
         main_picture_large={e.main_picture_large}
@@ -174,7 +192,7 @@ export function MangaContainer() {
         status={e.status}
         synopsis={e.synopsis}
         ></MangaCard>
-      )}  
+      )}
     </div>
       <div ref={IntersectionObserverRef} style={{width: '300px', height: '2px', backgroundColor: 'black'}}></div>
   { staticLoading? <h1>pagination loading...</h1>:

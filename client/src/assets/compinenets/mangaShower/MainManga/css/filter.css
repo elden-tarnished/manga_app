@@ -1,42 +1,89 @@
-*{
-  font-size: 20px;
+* {
+    font-size: 20px;
 }
-.filter__container {
-  width: 85vw;
-  background-color: #F5F5F5;
-  padding: 10px 20px;
-  border-radius: 30px;
-}
-.btn{
-  font-size: 16px;
-  font-weight: 600;
-  
-  padding: 3px 10px;
-  color: #333333;
-  border: 1px solid black;
-  
-  border-radius: 16px;
 
+.filter__container {
+    width: 90vw;
+    background-color: #F5F5F5;
+    padding: 20px;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
-.order__container, .limit__container, .direction__container, .explicitGenre__container, .type__container, .demographic__container{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;  
+
+.filter--horizontal__container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
 }
+
+.tags__container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn {
+    font-size: 16px;
+    font-weight: 400;
+
+    padding: 3px 10px;
+    border: 1px solid black;
+
+    border-radius: 10px;
+}
+
+
+.limit__container, .order__container, .direction__container {
+    flex-grow: 1;
+}
+
+.explicitGenre__container, .type__container, .demographic__container {
+    order: -1;
+}
+
+.limit__container {
+    order: 1;
+}
+
+.order__container, .limit__container, .direction__container, .explicitGenre__container, .type__container, .demographic__container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
 [class*="btn__container"] {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 5px;
-  background-color: #e4eaec;
-  padding: 5px ;
-  margin-top: 5px;
-  border-radius: 19px;
-  flex-grow: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+    background-color: #e4eaec;
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: 19px;
 }
+
 .order__container, .limit__container, .direction__container, .genre__container, .theme__container, .demographic__container, .type__container, .explicitGenre__container {
-  background-color: #e4eaec;
-  padding: 5px;
+    background-color: #e4eaec;
+    padding: 5px 15px;
+    border-radius: 16px;
+}
+
+@media (max-width: 768px) {
+    .order__container, .limit__container, .demographic__container, .type__container, .explicitGenre__container {
+        display: flex;
+        gap: 0;
+        flex-direction: column;
+        align-items: start;
+        justify-content: flex-start;
+    }
+
+    .filter__container {
+        padding: 10px;
+        width: 90vw;
+    }
 }
 

@@ -1,6 +1,14 @@
 .active{
-  background-color: red !important;
+    background-color: black;
+    color: white !important;
 }
 button{
-  all: unset;
+}
+.button:hover{
+    color: inherit;
+    box-shadow: none;
+    transform: none;
+    border-color: inherit;
+    font: inherit;
+    background: inherit;
 }

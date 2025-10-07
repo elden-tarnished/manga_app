@@ -1,15 +1,18 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import './css/MangaCard.css';
 import '../../smallComponents/mangaStatus.css';
 import { useGSAP} from "@gsap/react";
+import { gsap } from "gsap";
+import {ScrambleTextPlugin} from "gsap/ScrambleTextPlugin"
+import {Observer} from "gsap/Observer";
 import { MangaCardSkel } from "./skeletons/mangaCardSkel";
 // import { FilterContext } from "./MangaContainer";
 gsap.registerPlugin(useGSAP, ScrambleTextPlugin, Observer)
 export function MangaCard(props) {
   const {
     main_picture_large, title, 
-    english_title, rank, popularity,
-    start_date='', end_date='', synopsis, mean, 
+    // english_title, rank, popularity,
+    start_date='', end_date='', synopsis, mean,
     status, media_type, num_volumes,
     } = props;
   // const {loading} = useContext(FilterContext);
@@ -42,32 +45,32 @@ export function MangaCard(props) {
   const endYear = isNaN(eYearObj) ? null : eYearObj.toString(); 
 
   const [isRight, setIsRight] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  // const [isMobile, setIsMobile] = useState(false);
   const [imgLoading, setImgLoading] = useState(true);
   // const [imgWidth, setImgWidth] = useState(184);
   // const [windowWidth, setWindowWidth] = useState(null);
   
-  const cardRef = useRef();
-  const imgRef  = useRef();
-  const titleRef = useRef()
+  const cardRef = useRef(null);
+  const imgRef  = useRef(null);
+  const titleRef = useRef(null)
 
-  const detailAndsynopsisRef = useRef();
-  const detailRef = useRef();
-  const synopsisTextRef = useRef();
-  const synopsisRef = useRef();
+  const detailAndSynopsisRef = useRef(null);
+  const detailRef = useRef(null);
+  const synopsisTextRef = useRef(null);
+  const synopsisRef = useRef(null);
 
-  const meanRef = useRef();
-  const statusRef = useRef();
-  const mediaTypeRef = useRef();
-  const numVolumesRef = useRef();
-  const titleDateContainerRef = useRef();
-  const dRef = useRef()
+  const meanRef = useRef(null);
+  const statusRef = useRef(null);
+  const mediaTypeRef = useRef(null);
+  const numVolumesRef = useRef(null);
+  const titleDateContainerRef = useRef(null);
+  const dRef = useRef(null)
 
-  const dateRef = useRef();
-  const dateStartRef = useRef();
-  const dateEndRef = useRef();
+  const dateRef = useRef(null);
+  const dateStartRef = useRef(null);
+  const dateEndRef = useRef(null);
 
-  const tlDetailPauseThreshold = useRef();
+  const tlDetailPauseThreshold = useRef(null);
   
   const statusMap = {
     finished: 'Completed',
@@ -127,14 +130,13 @@ export function MangaCard(props) {
     gsap.set(imgRef.current, {
       opacity:0,
     })
-    if (imgLoading){
-      
-    } else{
-      gsap.to(imgRef.current, {
+    if (imgLoading === false) {
+        gsap.to(imgRef.current, {
         opacity: 1,
         duration:1
-      })
+        })
     }
+
   }, {dependencies: [imgLoading], scope: imgRef})
   useGSAP(() => {
     // if (loading) return;
@@ -149,7 +151,7 @@ export function MangaCard(props) {
     const synopsisWidthAA = synopsisWidth + (2 * synopsisPadding);
 
     tlCard
-    .to(detailAndsynopsisRef.current, 
+    .to(detailAndSynopsisRef.current,
       {
       pointerEvents: 'all',
       duration: 0.1
@@ -210,7 +212,7 @@ export function MangaCard(props) {
     .addPause('pause')
     tlDetailPauseThreshold.current = tlDetail.duration()
     
-    tlDetail.to(detailAndsynopsisRef.current, 
+    tlDetail.to(detailAndSynopsisRef.current,
     {
       height: 2.15 * 119,//match media
       duration: 0.1
@@ -241,11 +243,6 @@ export function MangaCard(props) {
       pointerEvents: 'all',
       duration: 0.2
     })
-
-    tlCard;
-    tlDetail;
-    tlSynopsis;
-
     // Observer.create({
     //   target: window,
     //   type: 'scroll',
@@ -270,10 +267,11 @@ export function MangaCard(props) {
     // })
     Observer.create({
       target: cardRef.current,
-      type: 'pointer', 
+      type: 'pointer',
 
       onHover: (self) => {
-        if (self.event.pointerType !== 'mouse') return;
+        console.log(synopsis)
+          if (self.event.pointerType !== 'mouse') return;
         tlCard.timeScale(1).play()
         tlDetail.timeScale(1).play(0);
         tlyoyo.play(0)
@@ -296,8 +294,7 @@ export function MangaCard(props) {
       }
     });
     Observer.create({
-      target: detailRef.current,
-      target: cardRef.current,
+      target: [detailRef.current, cardRef.current],
       type: 'touch',
       tolerance: 20,
 
@@ -372,22 +369,21 @@ export function MangaCard(props) {
       },
     })
 
-  }, {dependencies: [isMobile, num_volumes], scope: cardRef.current});
+  }, {dependencies: [num_volumes], scope: cardRef.current});
   
   const statusClass = statusMap[status] || 'NA';
   const CapitalizedMediaType = media_type ? media_type.charAt(0).toUpperCase() + media_type.slice(1) : '';
-
+  const isMobile = (window.innerWidth < 746)
     return (
     <>
-    {/* {loading ? <MangaCardSkel /> :  */}
-    <div className={`whole ${isRight ? "right" : "left"}`} 
+    <div className={`whole ${isRight ? "right" : "left"}`}
     ref={cardRef}
     >
       <div className="card" draggable='false' style={{backgroundColor: bgColor}}>
           <img ref={imgRef} src={main_picture_large} alt={title} draggable='false'/>
           <h4 className="title center-text" ref={titleRef}>{title}</h4>
       </div>
-      <div className={`detail-and-synopsis__container ${isRight ? "rightC" : "leftC"}`} ref={detailAndsynopsisRef}>
+      <div className={`detail-and-synopsis__container ${isRight ? "rightC" : "leftC"}`} ref={detailAndSynopsisRef}>
           <div className={`detail__container ${isRight && "detail__container--right"}`} ref={detailRef}>
               <div className='media-type-and-status__container'>
                 <h5 className={`media-type ${media_type}`} ref={mediaTypeRef}>{(CapitalizedMediaType==='one_shot')? CapitalizedMediaType.replace('_', '-'): CapitalizedMediaType.replace('_', ' ')}</h5>
@@ -441,7 +437,6 @@ export function MangaCard(props) {
             <p className='synopsis' ref={synopsisRef}>{synopsis}</p>
       </div>
     </div>  
-    {/* } */}
     </>
     )
 }

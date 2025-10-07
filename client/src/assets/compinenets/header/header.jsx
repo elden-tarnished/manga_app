@@ -2,6 +2,8 @@ import { SearchBar } from "./searchbar/SearchBar"
 
 export function Header() {
   return(
-    <SearchBar/>
-  )
+    <div className={"header__container"}>
+      <SearchBar/>
+    </div>
+)
 }
