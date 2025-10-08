@@ -1,0 +1,12 @@
+.header__container{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    width: 100%;
+    position: relative;
+    height: 80px;
+    background-color: lightskyblue;
+}
+.searchBar {
+    position: absolute;
+}

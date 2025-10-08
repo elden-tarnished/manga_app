@@ -1,10 +1,10 @@
 import {useEffect, useRef, useState, useLayoutEffect} from 'react';
 import { useGSAP } from "@gsap/react";
 import  './SearchResult.css';
+import "../../smallComponents/mangaStatus.css"
 
 
 export function SearchResult(props) {
-  console.log('title: ', props)
   const {title, main_image_medium, status, mean, synopsis, start_date='', end_date='', media_type} = props;
 
   const [isTouchOrMobile, setIsTouchOrMobile] = useState(false)

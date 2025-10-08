@@ -1,0 +1,47 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form {
+    display: flex;
+    min-width: 0;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+    border: 2px solid black;
+    border-radius: 999px;
+    background-color: #8fc8e5;
+
+}
+
+.input {
+    border: none;
+    margin: 0 10px;
+    overflow: hidden;
+    min-width: 0;
+    background-color: transparent;
+}
+.input:focus {
+    border: none;
+    outline: none;
+}
+.button {
+    border: none;
+    border-radius: 999px;
+    height: 40px;
+    width: 40px;
+    margin: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.result__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
