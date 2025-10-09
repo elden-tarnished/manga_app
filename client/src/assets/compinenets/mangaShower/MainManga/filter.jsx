@@ -74,7 +74,7 @@ export function Filter({FilterOptions}) {
   const tagButtons = useMemo(() => {
     return (filtersKeys.map((key) => 
     (<div key={key} className={`${key}__container`}>
-      <h1>{key}</h1>
+      <h1 className={`filter__title ${key}`}>{key}</h1>
       <div className={`${key}-btn__container`}>
       {FilterOptions[key].map( item => 
       (<FilterButton 
@@ -93,24 +93,26 @@ export function Filter({FilterOptions}) {
     <div className="filter__container">
 
       <div className={'filter--horizontal__container'}>
+        <button className={"filter__expand"}>exp</button>
         <div className="order__container">
-          <h1>Order</h1>
+          <h1 className={'filter__title'}>Order</h1>
           <div className="order-btn__container">{orderButtons}</div>
         </div>
 
         <div className="limit__container">
-          <h1>Limit</h1>
+          <h1 className={'filter__title'}>Limit</h1>
           <div className="limit-btn__container">{limitButtons}</div>
         </div>
 
         <div className="direction__container">
-          <h1>direction</h1>
+          <h1 className={'filter__title'}>direction</h1>
           <div className="direction-btn__container">{directionButtons}</div>
         </div>
 
       </div>
 
       <div className="tags__container">{tagButtons}</div>
+      <button className={"btn"} style={{borderRadius: '16px', margin: '5px'}}>Done</button>
     </div>
   );
 }

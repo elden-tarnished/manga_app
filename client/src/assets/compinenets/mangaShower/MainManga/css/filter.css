@@ -1,20 +1,47 @@
-* {
-    font-size: 20px;
-}
+
+/*default filter container height*/
 
 .filter__container {
+    height: 47.5px;
     width: 90vw;
+    padding: 10px;
+
+    /*TO animation*/
+    /*height: fit-content;*/
+    /*width: 95vw;*/
+    /*padding: 20px;*/
+
+    margin-top: 10px;
     background-color: #F5F5F5;
-    padding: 20px;
     border-radius: 30px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    overflow: hidden;
+}
+
+.filter__expand {
+    border-radius: 20px;
+    border: 0;
+    color: white;
+    background-color: black;
+    flex-grow: 1;
+
+    /*TO animation*/
+    /*flex-grow: 0;*/
+}
+
+.filter__title {
+    width: fit-content;
+    height: fit-content;
+
+    overflow: hidden;
+    font-size: 20px;
 }
 
 .filter--horizontal__container {
     display: flex;
-    flex-direction: row;
+    flex-direction: row-reverse;
     flex-wrap: wrap;
     gap: 10px;
 }
@@ -37,7 +64,11 @@
 
 
 .limit__container, .order__container, .direction__container {
-    flex-grow: 1;
+
+    flex-grow: 0;
+
+    /*TO animate*/
+    /*flex-grow: 1;*/
 }
 
 .explicitGenre__container, .type__container, .demographic__container {
@@ -47,12 +78,14 @@
 .limit__container {
     order: 1;
 }
-
+.direction__container {
+}
 .order__container, .limit__container, .direction__container, .explicitGenre__container, .type__container, .demographic__container {
     display: flex;
     flex-direction: row;
-    align-items: center;
     gap: 10px;
+    align-items: center;
+
 }
 
 [class*="btn__container"] {
@@ -61,19 +94,24 @@
     flex-wrap: wrap;
     gap: 5px;
     background-color: #e4eaec;
-    padding: 5px;
-    margin-top: 5px;
+    padding: 5px 5px;
     border-radius: 19px;
 }
 
 .order__container, .limit__container, .direction__container, .genre__container, .theme__container, .demographic__container, .type__container, .explicitGenre__container {
     background-color: #e4eaec;
-    padding: 5px 15px;
+    padding: 5px 5px 5px 10px;
     border-radius: 16px;
+}
+.filter__title {
+    margin-left: 10px;
 }
 
 @media (max-width: 768px) {
-    .order__container, .limit__container, .demographic__container, .type__container, .explicitGenre__container {
+    .order__container {
+        flex-direction: column;
+    }
+    .demographic__container, .type__container, .explicitGenre__container {
         display: flex;
         gap: 0;
         flex-direction: column;
@@ -82,8 +120,45 @@
     }
 
     .filter__container {
-        padding: 10px;
-        width: 90vw;
+        height: 47.5px;
+        width: 95vw;
+        padding: 6px;
+        border-radius: 22px;
+
+        /* TO animation */
+        /*width: 90vw;*/
+        /*height: fit-content;*/
+        /*padding: 10px;*/
+        /*border-radius: 30px;*/
+
+    }
+    .btn {
+        font-size: 16px;
+        padding: 3px 4px;
+    }
+    .filter__title {
+        font-size: 18px;
+        margin-right: 0;
+
+
+        width: 0;
+        height: 0;
+
+        /*TO animation*/
+        /*    width: fit-content;*/
+        /*    height: fit-content;*/
+    }
+    .order__container, .limit__container, .direction__container, .genre__container, .theme__container, .demographic__container, .type__container, .explicitGenre__container {
+        padding: 5px 5px;
+    }
+    .order__container, .limit__container, .direction__container, .explicitGenre__container, .type__container, .demographic__container {
+        gap: 0;
+
+        /*TO animate*/
+        /*gap: 5px;*/
+    }
+    .filter__title.theme, .filter__title.demographic, .filter__title.type, .filter__title.explicitGenre, .filter__title.genre {
+        margin-left: 10px;
     }
 }
 

@@ -148,7 +148,7 @@ async function ValidatingMangaId(req, res, next) {
     const mangaIdResult = await db.query('SELECT 1 FROM manga WHERE id=$1', [mangaId]);
     if (mangaIdResult.rows.length === 0) {
         return res.status(404).json({error: 'Manga with the specified ID does not exist'});
-    } 
+    }
     return next();
     } catch (err) {
         console.error('Error during manga ID validation: ', err);
@@ -161,7 +161,6 @@ async function ValidatingMangaId(req, res, next) {
 async function validateQuery(req, res, next) {
     try {
         const {direction=null, order='popularity', genre='', theme='', explicitGenre='', type='',demographic=''} = req.query;
-        console.log('niGGGGer', req.query)
         const validGenre = await validGenreSet();
         const validTheme = await validThemeSet();
         const validDemographic = await validDemographicSet();

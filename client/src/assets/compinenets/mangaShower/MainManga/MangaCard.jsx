@@ -45,8 +45,8 @@ export function MangaCard(props) {
   const endYear = isNaN(eYearObj) ? null : eYearObj.toString(); 
 
   const [isRight, setIsRight] = useState(false);
-  // const [isMobile, setIsMobile] = useState(false);
   const [imgLoading, setImgLoading] = useState(true);
+  // const [isMobile, setIsMobile] = useState(false);
   // const [imgWidth, setImgWidth] = useState(184);
   // const [windowWidth, setWindowWidth] = useState(null);
   

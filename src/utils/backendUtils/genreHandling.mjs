@@ -95,7 +95,7 @@
         }
     }
 
-    const validOrder = new Set(['id', 'start_date', 'rank', 'mean', 'popularity']);
+    const validOrder = new Set(['start_date', 'rank', 'mean', 'popularity']);
     const validType =  new Set(['manga', 'one_shot', 'doujinshi', 'light_novel', 'novel', 'manhwa', 'manhua']);
     const validExplicitGenre = new Set(['Ecchi', 'Erotica', 'Hentai']);
 
