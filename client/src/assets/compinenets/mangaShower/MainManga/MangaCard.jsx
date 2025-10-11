@@ -5,7 +5,7 @@ import { useGSAP} from "@gsap/react";
 import { gsap } from "gsap";
 import {ScrambleTextPlugin} from "gsap/ScrambleTextPlugin"
 import {Observer} from "gsap/Observer";
-import { MangaCardSkel } from "./skeletons/mangaCardSkel";
+import { MangaCardSkel } from "../mainMangaSkel/mangaCardSkel";
 // import { FilterContext } from "./MangaContainer";
 gsap.registerPlugin(useGSAP, ScrambleTextPlugin, Observer)
 export function MangaCard(props) {

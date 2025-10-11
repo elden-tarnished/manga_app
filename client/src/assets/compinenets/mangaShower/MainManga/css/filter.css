@@ -2,7 +2,7 @@
 /*default filter container height*/
 
 .filter__container {
-    height: 47.5px;
+    height: 47px;
     width: 90vw;
     padding: 10px;
 
@@ -57,7 +57,7 @@
     font-weight: 400;
 
     padding: 3px 10px;
-    border: 1px solid black;
+    border: 2px solid black;
 
     border-radius: 10px;
 }
@@ -98,6 +98,40 @@
     border-radius: 19px;
 }
 
+
+.btn.demographic {
+    padding: 3px 4px;
+}
+.type-btn__container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(85px, auto) );
+    width: 100%;
+    padding: 0;
+    margin-top: 5px;
+}
+.genre-btn__container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(130px, 1fr) );
+
+}
+.theme-btn__container{
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(160px, 1fr) );
+
+}
+.btn.limit{
+    min-width: 40px;
+}
+.btn.direction {
+    min-width: 60px;
+}
+.btn.explicitGenre {
+    min-width: 80px;
+}
+.btn.demographic {
+    padding: 3px 5px;
+}
+
 .order__container, .limit__container, .direction__container, .genre__container, .theme__container, .demographic__container, .type__container, .explicitGenre__container {
     background-color: #e4eaec;
     padding: 5px 5px 5px 10px;
@@ -106,7 +140,16 @@
 .filter__title {
     margin-left: 10px;
 }
-
+.filter__title.type {
+    padding-right: 5px;
+}
+.btn.done{
+    border-radius: 16px;
+    width: 20vw;
+    align-self: center;
+    color: white;
+    background-color: black;
+}
 @media (max-width: 768px) {
     .order__container {
         flex-direction: column;
@@ -120,19 +163,19 @@
     }
 
     .filter__container {
-        height: 47.5px;
-        width: 95vw;
+        height: 47px;
+        width: 90vw;
         padding: 6px;
         border-radius: 22px;
 
         /* TO animation */
-        /*width: 90vw;*/
         /*height: fit-content;*/
         /*padding: 10px;*/
         /*border-radius: 30px;*/
 
     }
     .btn {
+        border: 1px solid black;
         font-size: 16px;
         padding: 3px 4px;
     }
@@ -140,9 +183,6 @@
         font-size: 18px;
         margin-right: 0;
 
-
-        width: 0;
-        height: 0;
 
         /*TO animation*/
         /*    width: fit-content;*/
@@ -159,6 +199,15 @@
     }
     .filter__title.theme, .filter__title.demographic, .filter__title.type, .filter__title.explicitGenre, .filter__title.genre {
         margin-left: 10px;
+    }
+    .btn.done {
+        width: 50vw;
+    }
+
+    .theme-btn__container{
+        display: grid;
+        grid-template-columns: repeat(auto-fit,minmax(140px, 1fr) );
+
     }
 }
 

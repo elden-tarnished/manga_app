@@ -1,0 +1,71 @@
+.filter__container{
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: 10px;
+    overflow: hidden;
+    border-radius: 22px;
+    gap: 10px;
+    padding: 10px;
+    width: 90vw;
+    height: 49px;
+    background-color: #F5F5F5;
+    flex-wrap: wrap;
+}
+.filter__expand {
+    border-radius: 20px;
+    color: transparent;
+    border: 0;
+    background-color: black;
+    flex-grow: 1;
+
+}
+
+
+.limit__container{
+    min-width: 339px;
+    min-height: 49px;
+    border-radius: 16px;
+    flex-grow: 0;
+    flex-shrink: 1;
+    background: linear-gradient(105deg, #e4eaec 40%, #d4d1da 50%, #e4eaec 60%) 100% 0;
+    background-size: 400% 100%;
+}
+.direction__container{
+    min-width: 261px;
+    min-height: 49px;
+    border-radius: 16px;
+    flex-grow: 0;
+    flex-shrink: 1;
+    background: linear-gradient(105deg, #e4eaec 45%, #d4d1da 50%, #e4eaec 60%) 100% 0;
+    background-size: 400% 100%;
+}
+.order__container{
+    min-width: 344px;
+    min-height: 49px;
+    border-radius: 16px;
+    flex-grow: 0;
+    flex-shrink: 1;
+    background: linear-gradient(105deg, #e4eaec 40%, #d4d1da 50%, #e4eaec 60%) 100% 0;
+    background-size: 400% 100%;
+}
+
+@media (max-width: 768px) {
+    .filter__container{
+        width: 90vw;
+        padding: 5px;
+        height: 49px;
+    }
+    .direction__container{
+        min-width: 235px;
+        min-height: 47px;
+    }
+    .order__container{
+        min-width: 282px;
+        min-height: 47px;
+    }
+    .filter__expand {
+        border-radius: 20px;
+        color: transparent;
+
+    }
+}

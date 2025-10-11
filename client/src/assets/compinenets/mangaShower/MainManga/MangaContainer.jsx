@@ -1,11 +1,12 @@
 import {useState, useEffect, useMemo, useRef} from 'react';
 import axios from 'axios';
 import {MangaCard} from './MangaCard';
-import { MangaCardSkel } from './skeletons/mangaCardSkel';
+import { MangaCardSkel } from '../mainMangaSkel/mangaCardSkel';
 import { Filter } from './filter';
 import { Pagination } from './pagination';
 import {FilterContext} from "./context.js";
 import './css/MangaContainer.css'
+import {FilterSkel} from "../mainMangaSkel/filterSkel.jsx";
 
 
 export function MangaContainer() {
@@ -172,8 +173,9 @@ export function MangaContainer() {
 
   return(<div className='body'>
   <FilterContext value={filter}>
-    {staticLoading ? <h1>loading Filters...</h1> :
-    <Filter FilterOptions={data.sortOption}></Filter>
+    {staticLoading ?
+    <FilterSkel/> :
+    <Filter FilterOptions={data.sortOption}/>
     }
     <div className='manga__container' ref={mangaContainerRef}>
       {loading ? Array.from({length: visibleCount}, (_, i) => <MangaCardSkel key={i}/>) :
@@ -191,12 +193,12 @@ export function MangaContainer() {
         start_date={e.start_date}
         status={e.status}
         synopsis={e.synopsis}
-        ></MangaCard>
+        />
       )}
     </div>
       <div ref={IntersectionObserverRef} style={{width: '300px', height: '2px', backgroundColor: 'black'}}></div>
   { staticLoading? <h1>pagination loading...</h1>:
-  <Pagination maxPageNum={data.maxPageNum}></Pagination>}
+  <Pagination maxPageNum={data.maxPageNum}/>}
   </FilterContext>
   </div>)
 }
