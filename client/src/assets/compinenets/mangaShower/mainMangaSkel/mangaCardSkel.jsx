@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import '../css/mangaCardSkel.css';
 import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 
 export function MangaCardSkel() {
   const cardRef = useRef();
