@@ -8,6 +8,8 @@ import {useWindowSize} from "../../smallComponents/useWindowSize.jsx";
 
 export function Filter({FilterOptions}) {
 
+
+
   gsap.registerPlugin(useGSAP)
 
   const {
@@ -41,7 +43,7 @@ export function Filter({FilterOptions}) {
     type: setType,
     explicitGenre: setExplicitGenre
   }
-  const limits = ['25', '50', '60', '100', '200']
+  const limits = ['24', '50', '60', '100']
   const directionValues = ['ASC', 'DESC'];
   const filtersKeys = Object.keys(FilterOptions).filter(e => e !== 'validOrder');
 
@@ -101,8 +103,6 @@ export function Filter({FilterOptions}) {
         const container = `.${string}__container`
         const name = `.filter__title.${string}`;
         const tags = `.btn.${string}`;
-        const tagsArray = gsap.utils.toArray(tags);
-        console.log(tagsArray)
         const tweenContainer = gsap.from(container, {
           x: isMobile ? 0 : -100,
           y: isMobile ? -100 : 0,
@@ -153,7 +153,6 @@ export function Filter({FilterOptions}) {
     }
     tlRef.current.play();
     innterTlRef.current.play(0);
-    console.log(filterRef.current.scrollHeight)
   })
   const tagCurrents = useMemo(() => [genre,theme,demographic,type,explicitGenre],
   [genre,theme,demographic,type,explicitGenre]);

@@ -1,0 +1,18 @@
+
+.button{
+    border-radius: 20px;
+    border: 1px solid #000;
+    font-size: 20px;
+    padding: 5px 12px;
+}
+.container{
+    margin: 50px 0 100px 0;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    padding: 20px 0;
+    background: black;
+}

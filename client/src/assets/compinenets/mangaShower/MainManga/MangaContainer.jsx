@@ -1,9 +1,9 @@
-import {useState, useEffect, useMemo, useRef} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import axios from 'axios';
 import {MangaCard} from './MangaCard';
-import { MangaCardSkel } from '../mainMangaSkel/mangaCardSkel';
-import { Filter } from './filter';
-import { Pagination } from './pagination';
+import {MangaCardSkel} from '../mainMangaSkel/mangaCardSkel';
+import {Filter} from './filter';
+import {Pagination} from './pagination';
 import {FilterContext} from "./context.js";
 import './css/MangaContainer.css'
 import {FilterSkel} from "../mainMangaSkel/filterSkel.jsx";
@@ -14,6 +14,7 @@ export function MangaContainer() {
   const mangaContainerRef = useRef(null);
   const IntersectionObserverRef = useRef(null);
   // const [mangaContainerWidth, setMangaContainerWidth] = useState(null)
+
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,7 +34,53 @@ export function MangaContainer() {
   const [direction,     setDirection] =     useState('');
 
   const [page,          setPage] =          useState(1);
-  
+
+
+  function randomColors(pageAmount, colors, opacity) {
+    return Array.from({length: pageAmount}, () => {
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const rgba = hexToRgba(color, opacity);
+      return [color, rgba]
+    })
+  }
+  function hexToRgba(hexColor, opacity) {
+    let hex = hexColor.replace('#', '')
+    if (hexColor.length < 4) {
+      hex = hexColor.split('').map(char => char + char).join('');
+    }
+
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    return `rgba(${r},${g},${b}, ${opacity})`;
+  }
+  const colors =  [
+    "#FF6B6B",
+    "#4ECDC4",
+    "#45B7D1",
+    "#FED766",
+    "#8A2BE2",
+    "#FF8C00",
+    "#20B2AA",
+    "#9370DB",
+    "#F08080",
+    "#3CB371",
+    "#FFA07A",
+    "#BA55D3",
+    "#6A5ACD",
+    "#FFD700",
+    "#7B68EE",
+    "#00FA9A",
+    "#FF69B4",
+    "#1E90FF",
+    "#F7786B",
+    "#7FFFD4"
+  ];
+  const randomColorsMemo = useMemo(() => {
+    return randomColors(parseInt(limit, 10) || 0, colors, 0.7);
+
+  }, [page, limit]);
 
   const filter = useMemo(() => ({
     genre,
@@ -71,20 +118,10 @@ export function MangaContainer() {
       direction,])
 
   useEffect(() => {
-
     async function fetchData() {
       setLoading(true);
+      setVisibleCount(24);
       try {
-        console.log(`
-          getGenre: ${genre}\n
-          getTheme: ${theme}\n
-          getExplicitGenre: ${explicitGenre}\n
-          getOrder: ${order}\n
-          getDemographic: ${demographic}\n
-          getType: ${type}
-          other: ${limit}
-          other2: ${direction}`
-        );
         const result = await axios.get('http://localhost:3000/manga', {
           params: {
             genre,
@@ -98,13 +135,9 @@ export function MangaContainer() {
             page,
           }
         });
-
-        setVisibleCount(30);
         setData(result.data);
         setMangas(result.data.page);
-        setHasMore(result.data.page.length > 30);
-
-        console.log('num: ', result.data.pageNum, result.data.maxPageNum)
+        setHasMore(result.data.page.length > 24);
       } catch (err) {
         console.log('eRRor', err);
       } finally {
@@ -130,9 +163,9 @@ export function MangaContainer() {
 
   useEffect(() => {
     if (!hasMore) return;
-    if (!IntersectionObserverRef) return;
     console.log(window.innerWidth)
     const target = IntersectionObserverRef.current;
+    if (!target) return;
     const options = {
       root: null,
       rootMargin: '1000px',
@@ -140,15 +173,11 @@ export function MangaContainer() {
     }
     const callback = (entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting)
-
-        console.log(entry)
-        console.log('visible Count',visibleCount)
         if(entry.isIntersecting){
           if (mangas.length >= visibleCount) {
             setVisibleCount(prev => {
-              if (mangas.length > visibleCount) {
-                return (prev + 24);
+              if (mangas.length > visibleCount && hasMore) {
+                return (prev + Math.min(12, mangas.length - prev));
               }
               else {
                 setHasMore(false);
@@ -167,9 +196,10 @@ export function MangaContainer() {
         observer.disconnect()
     }
     
-  }, [hasMore, mangas])
+  }, [hasMore, mangas, hasMore])
 
-  const visibleMangas = mangas.slice(0, visibleCount);
+  const visibleMangas =mangas ? (mangas.slice(0, visibleCount)): [];
+  console.log(' visibleCount: '+ visibleCount + ' colors : ' + randomColorsMemo.length + ' mangas: ' + mangas.length);
 
   return(<div className='body'>
   <FilterContext value={filter}>
@@ -178,9 +208,10 @@ export function MangaContainer() {
     <Filter FilterOptions={data.sortOption}/>
     }
     <div className='manga__container' ref={mangaContainerRef}>
-      {loading ? Array.from({length: visibleCount}, (_, i) => <MangaCardSkel key={i}/>) :
-        visibleMangas.map( (e)=>
+      {loading ? Array.from({length: visibleCount}, (_, i) => <MangaCardSkel key={i} color={randomColorsMemo[i]}/>) :
+        visibleMangas.map( (e, i)=>
         <MangaCard
+        color={randomColorsMemo[i]}
         key={e.id}
         main_picture_large={e.main_picture_large}
         title={e.title}

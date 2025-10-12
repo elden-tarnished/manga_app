@@ -14,30 +14,10 @@ export function MangaCard(props) {
     // english_title, rank, popularity,
     start_date='', end_date='', synopsis, mean,
     status, media_type, num_volumes,
+    color
     } = props;
   // const {loading} = useContext(FilterContext);
-  const vibrantColors = [
-"#FF6B6B",
-"#4ECDC4",
-"#45B7D1",
-"#FED766",
-"#8A2BE2",
-"#FF8C00",
-"#20B2AA",
-"#9370DB",
-"#F08080",
-"#3CB371",
-"#FFA07A",
-"#BA55D3",
-"#6A5ACD",
-"#FFD700",
-"#7B68EE",
-"#00FA9A",
-"#FF69B4",
-"#1E90FF",
-"#F7786B",
-"#7FFFD4" 
-  ];
+
 
   const sYearObj = new Date(start_date).getFullYear();
   const eYearObj = new Date(end_date).getFullYear();
@@ -46,10 +26,12 @@ export function MangaCard(props) {
 
   const [isRight, setIsRight] = useState(false);
   const [imgLoading, setImgLoading] = useState(true);
+  const [isIntersecting, setIsIntersecting] = useState(false);
   // const [isMobile, setIsMobile] = useState(false);
   // const [imgWidth, setImgWidth] = useState(184);
   // const [windowWidth, setWindowWidth] = useState(null);
-  
+
+  const bgRef = useRef(null);
   const cardRef = useRef(null);
   const imgRef  = useRef(null);
   const titleRef = useRef(null)
@@ -71,6 +53,7 @@ export function MangaCard(props) {
   const dateEndRef = useRef(null);
 
   const tlDetailPauseThreshold = useRef(null);
+  const loadingTl = useRef(null);
   
   const statusMap = {
     finished: 'Completed',
@@ -78,8 +61,7 @@ export function MangaCard(props) {
     on_hiatus: 'On_hiatus',
     discontinued: 'Canceled'
   };
-  const bgColor = useMemo(() => vibrantColors[Math.floor(Math.random() * vibrantColors.length)], []);
-  
+
   useEffect(() => {
 
     //first method
@@ -123,23 +105,50 @@ export function MangaCard(props) {
       img.addEventListener('load', handleImgLoad);
       return () => img.removeEventListener('load', handleImgLoad);
     }
+
+    //forth method
+
+    const target = cardRef.current
+    const handleIntersection = (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setIsIntersecting(true)
+        } else {
+          setIsIntersecting(false)
+        }
+      })
+    }
+    const observer = new IntersectionObserver(handleIntersection, {
+      rootMargin: '200px',
+    })
+    if (target) observer.observe(target);
+    return () => observer.disconnect()
     
   }, [])
   
   useGSAP(()=> {
-    gsap.set(imgRef.current, {
-      opacity:0,
-    })
-    if (imgLoading === false) {
-        gsap.to(imgRef.current, {
+    const tl = gsap.timeline()
+      .to(bgRef.current, {
+        backgroundPositionX: '0%',
+        duration: 1.5,
+        ease: 'none',
+        repeat: -1,
+      })
+    if (imgLoading) {
+      tl.play()
+    } else {
+      gsap.to(imgRef.current, {
         opacity: 1,
         duration:1
-        })
+      }).eventCallback('onComplete', () => {
+        tl.revert()
+      })
     }
 
   }, {dependencies: [imgLoading], scope: imgRef})
   useGSAP(() => {
-    // if (loading) return;
+    if (imgLoading) return;
+    // if (!isIntersecting) return;
 
     const tlCard = gsap.timeline({paused: true});
     const tlDetail = gsap.timeline({paused: true});
@@ -191,12 +200,12 @@ export function MangaCard(props) {
     tlDetail
     .fromTo([mediaTypeRef.current, statusRef.current, meanRef.current, numVolumesRef?.current], {
       opacity:0,
-      x:-10,
+      x:-20,
     }, {
       stagger: {
-        each: 0.1,
+        each: 0.2,
       },
-      ease: "power3.out",
+      ease: "back.out",
       opacity:1,
       x: 0,
     }, '+=0.2').addLabel('tlInner')
@@ -232,7 +241,7 @@ export function MangaCard(props) {
     .to(detailRef.current, {
       height: 2.15 * 119, //match media
       ease: 'power3.inOut',
-      duration: 0.2,
+      duration: 0.4,
     }, '<')
     
     tlSynopsis
@@ -243,34 +252,13 @@ export function MangaCard(props) {
       pointerEvents: 'all',
       duration: 0.2
     })
-    // Observer.create({
-    //   target: window,
-    //   type: 'scroll',
-    //   tolerance: 50,
 
-    //   onChangeY: (self) => {
-    //     if (self.event.pointerType === 'mouse') return;
-    //     const pauseTime = tlDetailPauseThreshold.current;
-    //     if (tlDetail.time() > pauseTime) {
-    //         tlCard.timeScale(2).reverse().eventCallback('onUpdate', () => {
-    //           tlSynopsis.timeScale(2).reverse().eventCallback('onReverseComplete', () => {
-    //             tlSynopsis.revert();
-    //             tlDetail.revert();
-    //             tlyoyo.revert();
-    //           })
-    //         })
-    //     } else {
-    //       tlCard.timeScale(2).reverse()
-    //       tlyoyo.revert();
-    //     }
-    //   }
-    // })
+    ;
     Observer.create({
       target: cardRef.current,
       type: 'pointer',
 
       onHover: (self) => {
-        console.log(synopsis)
           if (self.event.pointerType !== 'mouse') return;
         tlCard.timeScale(1).play()
         tlDetail.timeScale(1).play(0);
@@ -369,7 +357,7 @@ export function MangaCard(props) {
       },
     })
 
-  }, {dependencies: [num_volumes], scope: cardRef.current});
+  }, {dependencies: [imgLoading], scope: cardRef.current});
   
   const statusClass = statusMap[status] || 'NA';
   const CapitalizedMediaType = media_type ? media_type.charAt(0).toUpperCase() + media_type.slice(1) : '';
@@ -379,8 +367,14 @@ export function MangaCard(props) {
     <div className={`whole ${isRight ? "right" : "left"}`}
     ref={cardRef}
     >
-      <div className="card" draggable='false' style={{backgroundColor: bgColor}}>
-          <img ref={imgRef} src={main_picture_large} alt={title} draggable='false'/>
+      <div
+        className="card"
+        draggable='false'
+        style={{
+          background: `linear-gradient(135deg, ${color[0]} 30%, ${color[1]} 50%, ${color[0]} 70%) 100% 0`,
+          backgroundSize: '600% 100%'}}
+        ref={bgRef}>
+          <img ref={imgRef} className={'img'} src={main_picture_large} alt={title} draggable='false'/>
           <h4 className="title center-text" ref={titleRef}>{title}</h4>
       </div>
       <div className={`detail-and-synopsis__container ${isRight ? "rightC" : "leftC"}`} ref={detailAndSynopsisRef}>

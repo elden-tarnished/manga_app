@@ -1,6 +1,6 @@
-import {useEffect, useRef, useState, useLayoutEffect} from 'react';
+import {useEffect, useState} from 'react';
 import { useGSAP } from "@gsap/react";
-import  './SearchResult.css';
+import styles from './SearchResult.module.css';
 import "../../smallComponents/mangaStatus.css"
 
 
@@ -38,43 +38,40 @@ export function SearchResult(props) {
 
 
   return (
-  <div className='whole__search'>
-    <div className='img-container'>
-      
-    </div>
-    <div className='info-and-img__container'>
-      <img src={main_image_medium} className='img' alt={title}></img>
-      <div className='info__container'>
-          <div className='media-type-and-status__container'>
-            <div className='media-type__dot d'></div>
-            <h4 className={`media-type ${media_type}`}>{CapitalizedMediaType}</h4>
-            <div className={`status__dot d ${statusClass}`}></div>
-            <h4 className={`status ${statusClass}`}>{statusClass}</h4>
-            {isTouchOrMobile && <button className='more-info__button'>I</button>}
+  <div className={styles.whole__search}>
+    <div className={styles.infoAndImg__container}>
+      <img src={main_image_medium} className={styles.img} alt={title}></img>
+      <div className={styles.info__container}>
+          <div className={styles.mediaTypeAndStatus__container}>
+            <div className={styles.d}></div>
+            <h4 className={`${styles.mediaType} ${media_type}`}>{CapitalizedMediaType}</h4>
+            <div className={`${styles.d} ${statusClass}`}></div>
+            <h4 className={`${styles.status} ${statusClass}`}>{statusClass}</h4>
+            {isTouchOrMobile && <button >I</button>}
           </div>
-          <div className='title-and-date__container'>
-            <div className='title__container'>
-              <h3 className='title'>{title}</h3>
+          <div className={styles.titleAndDate__container}>
+            <div className={styles.title__container}>
+              <h3 className={styles.title}>{title}</h3>
             </div>
-            <h4 className='year'>(
+            <h4 className={styles.year}>(
             {(startYear || endYear) ?   
             <>
-              <span className='start-year'>{startYear}</span>
-              <span className='end-year'>{endYear}</span> 
+              <span >{startYear}</span>
+              <span >{endYear}</span>
             </>             
             : <span>Date:N/A</span>
             }
             )</h4>
         </div>
-        <div className='mean__container'>
-          <div className='mean__dot d'></div>
-          <h4 className='mean__label'>Score: <span className='mean'>{mean}</span></h4>
+        <div className={styles.mean__container}>
+          <div className={styles.d}></div>
+          <h4 >Score: <span className='mean'>{mean}</span></h4>
         </div>
       </div>
     </div>
-    <div className='synopsis__container'>
-      <div className='synopsis__dot d'></div>
-      <p className='sypnosis'>{synopsis.slice(0, 500)}</p>
+    <div className={styles.synopsis__container}>
+      <div className={styles.d}></div>
+      <p >{synopsis.slice(0, 500)}</p>
     </div>
   </div>)
 }

@@ -33,9 +33,12 @@
 }
 
 /* width */
-.card, img{
+.card, .img{
   width: 184px;
   height: 280px;
+}
+.img {
+    opacity: 0;
 }
 .detail-and-synopsis__container{
   height: 119px;
@@ -80,7 +83,7 @@
   }
 
   /* width */
-  .card, img{
+  .card, .img{
     width:    calc(184px * 0.8);
     height:   calc(280px * 0.8);
   }
@@ -123,7 +126,7 @@
   position: relative;
 } 
 
-img{
+.img{
   object-fit: cover;
   background-color: rgb(87, 95, 185);
   text-align: center;
