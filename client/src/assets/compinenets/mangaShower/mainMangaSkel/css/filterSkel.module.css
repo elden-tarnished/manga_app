@@ -1,3 +1,6 @@
+/* ⚠️ STYLE ISSUE: No space after selector
+   WHY IT MATTERS: Standard practice is .filter__container { with a space
+   READABILITY: Makes code more readable and follows conventions */
 .filter__container{
     display: flex;
     flex-direction: row-reverse;
@@ -21,6 +24,9 @@
 }
 
 
+/* ⚠️ STYLE ISSUE: No space after selector (same issue throughout file)
+   💡 TIP: These skeleton loaders look good with gradient animations!
+   CONSISTENCY: Add space after selector: .limit__container { */
 .limit__container{
     min-width: 339px;
     min-height: 49px;

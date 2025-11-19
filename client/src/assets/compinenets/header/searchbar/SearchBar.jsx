@@ -1,73 +1,261 @@
-import {useState, useEffect, useRef} from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from 'axios';
-import {SearchResult} from "./SearchResult";
+import { SearchResult } from "./SearchResult";
 import styles from "./SearchBar.module.css"
-import {useGSAP} from "@gsap/react";
-import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
+import { Observer } from "gsap/Observer";
+import { SplitText } from "gsap/SplitText";
+import { useIsMobile } from '../../smallComponents/IsMobileProvider.jsx'
+gsap.registerPlugin(SplitText, Observer)
 
 export function SearchBar() {
   const URL = 'http://localhost:3000/';
 
 
+  const isMobile = useIsMobile()
+
+  const count = useRef(0)
+  const isAnimating = useRef(false)
+
+  const resultsTl = useRef(null)
+  const messageRef = useRef(null);
+  const resultContainerRef = useRef(null);
+  const containerRef = useRef(null);
   const buttonRef = useRef(null);
   const formRef = useRef(null);
   const inputRef = useRef(null);
-  const cardRef = useRef([]);
+  const cardsRef = useRef()
+
 
   const tlRef = useRef(null);
 
-  const [inputIsSelected, setInputIsSelected] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [visibleData, setVisibleData] = useState([])
+  const [isOpen, setIsOpen] = useState(false);
+  //const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [data, setData] = useState([]);
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     async function fetchData() {
       if (!inputValue) {
+        setMessage('Search for something :)')
         setError(null);
         setData([]);
         return;
       }
       try {
         const result = await axios.get(`${URL}search?q=${inputValue}`)
-        setData(result.data);
+        const resultDataIds = JSON.stringify(result.data?.map((e) => e.id).sort())
+        const dataIds = JSON.stringify(data?.map(e => e.id).sort())
+        if (result.data.length === 0) {
+          setData([])
+
+          setMessage('No result were found :(')
+          return
+        } else {
+          setMessage('')
+        }
+        if (resultDataIds == dataIds) {
+          return
+        } else {
+          setData(result.data)
+        }
+
       } catch (err) {
-        console.log(err)
         setError('FAiled to fetch results, try again.');
+        setMessage('Error: cannot fetch data :(')
       } finally {
-        setIsLoading(false);
+        //setIsLoading(false);
       }
     }
-  const timeOutId = setTimeout(fetchData, 500);
+    const timeOutId = setTimeout(fetchData, 500);
     return () => clearTimeout(timeOutId);
   }, [inputValue]);
 
-  useEffect(() => {
-    console.log(inputIsSelected)
-  }, [inputIsSelected, setInputIsSelected]);
+  function resultContainerHeightAnimate(itemsNumber) {
+    let height = 98;
+    function resultTween() {
+      const tween =
+        gsap.to(resultContainerRef.current, {
+          height: height,
+        })
+      return tween
+    }
+    if (itemsNumber === 0) {
+      height = 98
+      resultTween()
+      return
+    }
+    if (itemsNumber > 4) { height = 3 * 98 + 2 * 8; }
+    else if (itemsNumber > 2) { height = 2 * 98 + 8 }
+    else { height = 98 }
+    resultTween()
+  }
+
+  useGSAP(() => {
+    const animationProperties = {
+      toAnimate: gsap.utils.toArray('.searchBarCardRef').slice(0, 6),
+      toAnimatelenght: gsap.utils.toArray('.searchBarCardRef').slice(0, 6).length,
+      toFade: gsap.utils.toArray('.searchBarCardRef').splice(0, 6),
+    }
+
+    resultContainerHeightAnimate(animationProperties.toAnimatelenght)
+    if (animationProperties.toAnimate.length === 0) {
+      return
+    }
+
+    gsap.timeline().fromTo(animationProperties.toAnimate, {
+      opacity: 0,
+      y: 0,
+      scale: 0.7,
+    }, {
+      ease: 'power3',
+      overwrite: true,
+      stagger: {
+        amount: 0.3,
+        grid: 'auto',
+        ease: 'none',
+      },
+      duration: 0.3,
+      ease: 'back',
+      opacity: 1,
+      scale: 1,
+    })
+      .to(animationProperties.toFade, {
+        opacity: 1,
+        duration: 0.3
+      })
+
+  }, { dependencies: [visibleData] })
+
+  useGSAP(() => {
+    if (!isOpen)
+      resultContainerHeightAnimate(2)
+  }, { dependencies: [isOpen] })
+
+  useGSAP(() => {
+    if (!count) return
+    const toAnimate = gsap.utils.toArray('.searchBarCardRef')
 
 
-  const {contextSafe} = useGSAP(() => {
-    const tl = gsap.timeline({paused: true})
+    if (!toAnimate || toAnimate.length === 0) {
+      setVisibleData(data)
+      return () => { }
+    }
+
+    gsap.to(toAnimate, {
+      scale: 0.7,
+      y: 20,
+      opacity: 0,
+      duration: 0.16,
+      ease: 'power2.in',
+      onComplete: () => {
+        isAnimating.current = false
+        count.current = 0
+        gsap.set(cardsRef.current, { y: 0 })
+        setVisibleData(data)
+      }
+    })
+
+    return () => {
+    }
+  }, { dependencies: [data] })
+
+  useGSAP(() => {
+    if (!messageRef.current) return;
+    let split = SplitText.create(messageRef.current, { autoSplit: true, type: 'chars' })
+    gsap.timeline()
+      .from(split.chars, {
+        stagger: {
+          each: 0.02,
+        },
+        autoAlpha: 0,
+        y: 10,
+        scaleY: 0.2,
+        x: -5,
+      })
+
+  }, { dependencies: [message] })
+
+  function animateRows(classNameOrRef, itemHeight, isMobile, computerRows, mobileRows, lastRowOnDisplay, count) {
+    let rowsToAnimate = computerRows
+    if (isMobile) rowsToAnimate = mobileRows
+    if (count > rowsToAnimate - lastRowOnDisplay) return;
+    if (count < 0) return;
+    gsap.to(classNameOrRef, {
+      y: -(count * itemHeight),
+      ease: 'power2.out',
+      duration: 0.2,
+      onStart: () => isAnimating.current = true,
+      onComplete: () => isAnimating.current = false
+    })
+  }
+  useGSAP(() => {
+    Observer.create({
+      target: resultContainerRef.current || window, // Fallback to window if ref isn't ready
+      type: 'wheel, touch',
+      preventDefault: true,
+      onUp: () => {
+        if (!cardsRef.current) return;
+        if (isAnimating.current) return
+        let maxRows = isMobile ? 24 : 12;
+        count.current++;
+        if (count.current > maxRows - 3) count.current = maxRows - 3;
+        animateRows(cardsRef.current, 98 + 8, isMobile, 12, 24, 3, count.current);
+
+      },
+      onDown: () => {
+        if (!cardsRef.current) return;
+        if (isAnimating.current) return
+        count.current--;
+        if (count.current < 0) count.current = 0
+        animateRows(cardsRef.current, 98 + 8, isMobile, 12, 24, 3, count.current);
+      },
+    });
+  }, { dependencies: [isMobile] });
+
+  const { contextSafe } = useGSAP(() => {
+    const tl = gsap.timeline({ paused: true })
+      .from(containerRef.current, {
+        width: 0,
+      })
       .from((inputRef.current), {
         width: 0,
         padding: 0,
-        margin: 0
-      })
+        margin: 0,
+        ease: 'power4'
+      }, 0)
+      .from(resultContainerRef.current, {
+        pointerEvents: 'none',
+        scale: 0.6,
+        width: 0,
+        y: -20,
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power3',
+        height: 0
+      }, '0.02')
+    tlRef.current = tl
 
-    tlRef.current = tl;
   });
+
+
   const onPointerEnter = contextSafe(() => {
     tlRef.current.play()
   })
+
   const onPointerLeave = contextSafe(() => {
-    if (inputIsSelected) {
+    console.log('in pointer: ', inputValue)
+    if (!inputValue) {
+      resultContainerHeightAnimate(0)
+      tlRef.current.reverse().eventCallback("onUpdate", () => setInputValue(""))
+      setIsOpen(false)
       return;
     }
-    tlRef.current.reverse()
   })
-
 
   const handleChange = (e) => {
     const value = e.target.value
@@ -75,25 +263,28 @@ export function SearchBar() {
   }
   const handleSubmit = (e) => e.preventDefault();
   const handleFocus = () => {
-    setInputIsSelected(true);
+    setIsOpen(true);
     tlRef.current.play();
   }
-  const handleBlur = () => {
-    setInputIsSelected(false);
-    tlRef.current.reverse().eventCallback("onUpdate", () => setInputValue(""))
-  }
 
-  const onClickButton = () => {
-    if (inputIsSelected) {
-      return;
+  useEffect(() => {
+    function handleMouseOut(e) {
+      if (resultContainerRef.current && (resultContainerRef.current.contains(e.target)) || inputRef.current.contains(e.target)) {
+        return
+      }
+      setIsOpen(false)
+      resultContainerHeightAnimate(0)
+      tlRef.current.reverse().eventCallback("onUpdate", () => setInputValue(""))
     }
-    console.log("this should reroute to results page");
-  }
+    document.addEventListener('mousedown', handleMouseOut)
+    return () => document.removeEventListener('mousedown', handleMouseOut)
 
+  }, [isOpen])
 
   return (
     <div
       className={styles.container}
+      ref={containerRef}
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
     >
@@ -106,35 +297,43 @@ export function SearchBar() {
           value={inputValue}
           onChange={handleChange}
           onFocus={handleFocus}
-          onBlur={handleBlur}
+        //onBlur={}
         />
         <button
           className={styles.button}
           ref={buttonRef}
-          onClick={onClickButton}
+
         >
           <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 30 30">
             <path d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z"></path>
           </svg>
         </button>
       </form>
-      <div className={styles.result__container}>
-        {isLoading ? <h1>loading</h1> : error ? <p>{error}</p> :
-          data.map((e, i) => {
-          return (
-          <div className={"result-card"} ref={cardRef} key={i}>
-          <SearchResult
-            title={e.title}
-            main_image_medium={e.main_picture_medium}
-            status={e.status}
-            mean={e.mean}
-            synopsis={e.synopsis}
-            start_date={e.start_date}
-            end_date={e.end_date}
-            media_type={e.media_type}
-          ></SearchResult>
-          </div>)
-        })}
+      <div className={styles.result__container} ref={resultContainerRef}
+      >
+        <div className={styles.message__wrapper}>
+          <h4 className={styles.message} ref={messageRef}>{message}</h4>
+        </div>
+        <div
+          ref={cardsRef}
+          className={styles.searchBarCardsRef}
+        >
+          {visibleData.map((e) => {
+            return (
+              <div className={`${styles.resultCard} searchBarCardRef`} key={e.id}>
+                <SearchResult
+                  title={e.title}
+                  main_image_medium={e.main_picture_medium}
+                  status={e.status}
+                  mean={e.mean}
+                  synopsis={e.synopsis}
+                  start_date={e.start_date}
+                  end_date={e.end_date}
+                  media_type={e.media_type}
+                ></SearchResult>
+              </div>)
+          })}
+        </div>
       </div>
 
     </div>

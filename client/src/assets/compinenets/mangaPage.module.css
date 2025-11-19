@@ -1,3 +1,7 @@
+/* ⚠️ STYLE ISSUES:
+   1. No space after .container{
+   2. Extra space before semicolon: "center ;"
+   BEST PRACTICE: .container { and no spaces before semicolons */
 .container{
     display: flex;
     flex-direction: column;

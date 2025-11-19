@@ -1,21 +1,24 @@
-.body{
+.body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #DCC5B2;
 }
 
-.manga__container{
+
+.manga__container {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 40px;
   justify-content: center;
-  margin:30px;
+  padding: 30px;
+  background-color: #F0E4D3;
 }
 
 @media (max-width: 768px) {
-  .manga__container{
+  .manga__container {
     gap: 10px;
-    margin: 20px;
+    padding: 20px;
   }
 }

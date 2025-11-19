@@ -1,93 +1,86 @@
-.whole__search{
-  display: flex;
-  flex-direction: column;
-  width: 50vw;
-  margin: 5px;
-}
-@media (max-width:833px) {
-  .whole__search{
-    width: 90vw;
-    font-size: 0.9rem;
-  }
-}
-@media (max-width:380px){
-  .whole__search{
-    width: 90vw;
-    font-size: 0.85rem;
-  }
-}
-
-.d{
-  background-color: black;
-  width: 5px;
-  height: 5px;
-  flex-shrink: 0;
+* {
+  font-family: "Montserrat", sans-serif;
 }
 
 
-h3, h2, h4{
-  margin: 0;
-}
-
-
-.info-and-img__container{
+.whole {
   display: flex;
   flex-direction: row;
-  background-color: aliceblue;
-  padding: 5px;
+  gap: 10px;
+  border-radius: 8px;
+  background-color: #F0E4D3;
+  min-width: 0;
 }
-.info__container{
+
+.details__container {
   display: flex;
   flex-direction: column;
   min-width: 0;
-}
-.img{
-  height: 100px;
-  margin-right: 10px;
+
 }
 
-.media-type-and-status__container{
+.title__container {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 10px;
-  gap: 5px;
-
-}
-.media-type, .status{
-  white-space: nowrap;
+  overflow: hidden;
+  flex-grow: 0;
 }
 
-.title-and-date__container{ 
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.title__container{
-  display: flex;
+.title {
+  font-size: 20px;
+  font-weight: 500;
+
   min-width: 0;
-}
-.title{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;
-  margin-right: 3px;
+
+  flex-shrink: 1;
+
 }
-.year{
+
+.year {
+  margin-left: 5px;
+  font-size: 18px;
   font-weight: 400;
+  margin-right: 5px;
 }
-.mean__container{
-  display: flex;
-  align-items: center;
-  gap: 5px;
+
+.titleMask__wrapper {
+  display: none;
 }
-.synopsis__container{
+
+.mediaContainer {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  flex-wrap: wrap;
   gap: 5px;
-  width: 0;
-  height: 0;
+}
+
+.mediaType,
+.status {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.img__wrapper {
+  height: 90px;
+  min-width: 55px;
+  border-radius: 5px;
   overflow: hidden;
+  margin: 4px 0 4px 4px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #F0E4D3 30%, #DCC5B2 50%, #F0E4D3 70%) 100% 0;
+  background-size: 600% 100%;
+}
+
+.img {
+  font-size: 0;
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-color: transparent;
+  will-change: opacity;
 }

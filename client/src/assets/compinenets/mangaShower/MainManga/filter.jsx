@@ -1,12 +1,12 @@
-import {useContext, useMemo, useRef, useEffect, useState} from "react";
-import {FilterContext} from "./context.js";
-import {FilterButton} from "./button";
+import { useContext, useMemo, useRef, useEffect, useState } from "react";
+import { FilterContext } from "./context.js";
+import { FilterButton } from "./button";
 import './css/filter.css';
-import {useGSAP} from "@gsap/react";
+import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import {useWindowSize} from "../../smallComponents/useWindowSize.jsx";
+import { useWindowSize } from "../../smallComponents/useWindowSize.jsx";
 
-export function Filter({FilterOptions}) {
+export function Filter({ FilterOptions }) {
 
 
 
@@ -43,7 +43,7 @@ export function Filter({FilterOptions}) {
     type: setType,
     explicitGenre: setExplicitGenre
   }
-  const limits = ['24', '50', '60', '100']
+  const limits = ['24', '50', '60', '80']
   const directionValues = ['ASC', 'DESC'];
   const filtersKeys = Object.keys(FilterOptions).filter(e => e !== 'validOrder');
 
@@ -69,30 +69,32 @@ export function Filter({FilterOptions}) {
 
   }, [windowSize])
 
-  const {contextSafe} = useGSAP(() => {
+  const { contextSafe } = useGSAP(() => {
     let mm = gsap.matchMedia()
     const tags = ['demographic', 'type', 'explicitGenre', 'genre', 'theme'];
 
     const breakPoint = 768;
-    innterTlRef.current = gsap.timeline({paused: true});
-    tlRef.current = gsap.timeline({paused: true,
+    innterTlRef.current = gsap.timeline({ paused: true });
+    tlRef.current = gsap.timeline({
+      paused: true,
       defaults: {
         duration: 0.4
-      }})
+      }
+    })
 
     mm.add({
       isMobile: `(max-width: ${breakPoint - 1}px)`,
       isDesktop: `(min-width: ${breakPoint}px)`
     }, (context) => {
 
-      let {isMobile} = context.conditions;
+      let { isMobile } = context.conditions;
 
-        tlRef.current.to('.filter__container', {
-          height: filterRef.current.scrollHeight + 'px',
-          padding: isMobile ? '10px' : '20px',
-          duration: 1,
-          ease: 'power3.inOut',
-        }, 0)
+      tlRef.current.to('.filter__container', {
+        height: filterRef.current.scrollHeight + 'px',
+        padding: isMobile ? '10px' : '20px',
+        duration: 1,
+        ease: 'power3.inOut',
+      }, 0)
         .to('.filter__expand', {
           flexGrow: 0,
           ease: 'power3.inOut',
@@ -143,7 +145,7 @@ export function Filter({FilterOptions}) {
       }, 0)
 
 
-  }, {scope: filterRef.current});
+  }, { scope: filterRef.current });
 
 
   const onClick = contextSafe(() => {
@@ -154,30 +156,31 @@ export function Filter({FilterOptions}) {
     tlRef.current.play();
     innterTlRef.current.play(0);
   })
-  const tagCurrents = useMemo(() => [genre,theme,demographic,type,explicitGenre],
-  [genre,theme,demographic,type,explicitGenre]);
+  const tagCurrents = useMemo(() => [genre, theme, demographic, type, explicitGenre],
+    [genre, theme, demographic, type, explicitGenre]);
 
   const selectedValuesSetter = useMemo(() => {
     return {
-    genre: tagCurrents[0],
-    theme: tagCurrents[1],
-    demographic: tagCurrents[2],
-    type: tagCurrents[3],
-    explicitGenre: tagCurrents[4],}
+      genre: tagCurrents[0],
+      theme: tagCurrents[1],
+      demographic: tagCurrents[2],
+      type: tagCurrents[3],
+      explicitGenre: tagCurrents[4],
+    }
   }, [tagCurrents])
 
   const orderButtons = useMemo(() => {
     return FilterOptions.validOrder.map(item =>
-       <FilterButton key={item} value={item} selectedValues={order} setter={setOrder} filterType={'order'}></FilterButton>
+      <FilterButton key={item} value={item} selectedValues={order} setter={setOrder} filterType={'order'}></FilterButton>
     )
   }, [order]);
   const limitButtons = useMemo(() => {
-    return limits.map(item => 
+    return limits.map(item =>
       <FilterButton key={item} value={item} selectedValues={limit} setter={setLimit} filterType={'limit'}></FilterButton>
     )
   }, [limit]);
   const directionButtons = useMemo(() => {
-    return directionValues.map(item => 
+    return directionValues.map(item =>
       <FilterButton key={item} value={item} selectedValues={direction} setter={setDirection} filterType={'direction'}></FilterButton>
     )
   }, [direction])
@@ -185,26 +188,26 @@ export function Filter({FilterOptions}) {
 
   //keys: demographic, type, explicitGenre, genre, theme
   const tagButtons = useMemo(() => {
-    return (filtersKeys.map((key) => 
+    return (filtersKeys.map((key) =>
     (<div key={key} className={`${key}__container`}>
       <h1 className={`filter__title ${key}`}>{key}</h1>
       <div className={`${key}-btn__container tags__btn`}>
-      {FilterOptions[key].map( item => 
-      (<FilterButton 
-        key={`${key}-${item}`} 
-        value={item}
-        selectedValues={selectedValuesSetter[key]}
-        setter={setter[key]}
-        filterType={key}
+        {FilterOptions[key].map(item =>
+        (<FilterButton
+          key={`${key}-${item}`}
+          value={item}
+          selectedValues={selectedValuesSetter[key]}
+          setter={setter[key]}
+          filterType={key}
         >
-      </FilterButton>))}
+        </FilterButton>))}
       </div>
     </div>)))
   }, [tagCurrents])
 
   return (
     <div className="filter__container"
-         ref={filterRef}>
+      ref={filterRef}>
 
       <div className={'filter--horizontal__container'} ref={filterHorizontalContainerRef}>
         <button className={"filter__expand"} ref={filterExpandRef} onClick={onClick}>exp</button>

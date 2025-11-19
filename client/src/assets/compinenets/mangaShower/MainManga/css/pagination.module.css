@@ -1,18 +1,51 @@
-
-.button{
-    border-radius: 20px;
-    border: 1px solid #000;
-    font-size: 20px;
-    padding: 5px 12px;
+.btn {
+  border-radius: 5px;
+  border: 1px solid #000;
+  font-size: 20px;
+  align-self: center;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 37px;
 }
-.container{
-    margin: 50px 0 100px 0;
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    justify-self: center;
-    padding: 20px 0;
-    background: black;
+
+.still {
+  background-color: black;
+  color: #FAF7F3;
+}
+
+/* ⚠️ CRITICAL ISSUE: display: flex with grid-template-columns
+   WHY IT'S WRONG: grid-template-columns only works with display: grid
+   PROBLEM: The grid-template-columns property is being ignored completely
+   FIX: Either use display: grid or remove grid-template-columns
+   CURRENT: This is using flexbox, so the grid property does nothing */
+.container {
+  margin: 10px 0 100px 0;
+  min-width: 300px;
+  display: flex;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #FAF7F3;
+}
+
+
+@media (max-width: 768px) {
+  .filler {
+    display: none;
+  }
+
+  .btn {
+    font-size: 16px;
+    min-width: 30px;
+    min-height: 30px;
+  }
+
+  .container {
+    gap: 4px;
+  }
 }

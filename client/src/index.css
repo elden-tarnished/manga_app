@@ -1,3 +1,7 @@
+/* ⚠️ ISSUE: justify-content: start should be flex-start
+   WHY: 'start' is a newer CSS value, 'flex-start' has better browser support
+   COMPATIBILITY: Use flex-start for broader compatibility
+   NOTE: 'start' works in modern browsers but flex-start is more standard */
 .main-page{
   display: flex;
   flex-direction: column;

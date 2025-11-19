@@ -1,47 +1,114 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+  width: 60vw;
 }
 
+
+
 .form {
-    display: flex;
-    min-width: 0;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 10px;
-    border: 2px solid black;
-    border-radius: 999px;
-    background-color: #8fc8e5;
+  z-index: 3;
+  display: flex;
+  min-width: 0;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 10px;
+  border: 2px solid #ba487f;
+  border-radius: 999px;
+  background-color: #f0e4d3;
 
 }
 
 .input {
-    border: none;
-    margin: 0 10px;
-    overflow: hidden;
-    min-width: 0;
-    background-color: transparent;
+  width: 50vw;
+  border: none;
+  margin: 0 10px;
+  overflow: hidden;
+  min-width: 0;
+  background-color: transparent;
+  font-size: 16px;
 }
+
 .input:focus {
-    border: none;
-    outline: none;
+  border: none;
+  outline: none;
 }
+
 .button {
-    border: none;
-    border-radius: 999px;
-    height: 40px;
-    width: 40px;
-    margin: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  border: none;
+  background-color: #faf7f3;
+  border-radius: 999px;
+  height: 40px;
+  width: 40px;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
 }
 
 .result__container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  margin-top: 10px;
+  z-index: 3;
+  /*
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+*/
+
+  height: calc(98px);
+  padding: 8px;
+  width: calc(63vw - 10px);
+  background-color: rgba(220, 197, 178, 0.6);
+  overflow: hidden;
+  backdrop-filter: blur(15px);
+  border: 1px solid #D9A299;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+  border-radius: 14px;
+  position: relative;
+}
+
+.searchBarCardsRef {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.message {
+  font-size: 20px;
+  font-weight: 400;
+  top: 15px;
+  text-wrap: nowrap;
+  width: auto;
+}
+
+.message__wrapper {
+  position: absolute;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.resultCard {
+  width: calc(50% - 5px);
+}
+
+@media (max-width: 768px) {
+  .resultCard {
+    width: 100%;
+  }
+
+  .result__container {
+    width: 85.5vw;
+    margin-top: 10px;
+    grid-template-columns: repeat(1, 1fr);
+  }
 }

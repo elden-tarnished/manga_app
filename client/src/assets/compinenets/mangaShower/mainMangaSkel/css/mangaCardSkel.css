@@ -1,3 +1,8 @@
+/* ⚠️ STYLE ISSUES:
+   1. No space after selector: .card--skel{
+   2. Extra space in "184px ;" - should be "184px;"
+   3. Empty line before position - inconsistent spacing
+   WHY IT MATTERS: Professional code follows consistent formatting conventions */
 
 .card--skel{
   width: 184px ;

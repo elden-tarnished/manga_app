@@ -1,61 +1,97 @@
-  .manga{
-    background-color:#202871;     
-    color: #E8E8E8;
-  }
-  .one_shot{
-    background-color: #9E9E9E;
-    color: white;
-  }
-  .doujinshi{
-    background-color: #8d42a2;
-    color: white;
-  }
-  .light-novel{
-    background-color: #8bb6eb;
-    color: white;
-  }
-  .novel{
-    background-color: #8D6E63;
-    color: white;
-  }
-  .manhwa{
-    background-color: #cd7c63;
-    color: white;
-  }
-  .manhua{
-    background-color: #cd6363;
-    color: white;  
-  }
-  .manga, .one_shot,.doujinshi, .light_novel, .novel, .manhua, .manhwa {
-  background: linear-gradient(135deg, rgba(113, 137, 203, 0.538), rgba(16, 41, 154, 0.842));
-  padding: 3px 8px;
-  border-radius: 16px;
+/* ⚠️ STYLE ISSUES:
+   1. Extra spaces after #202871 (5 spaces before color)
+   2. No space after .manga{ 
+   CONSISTENCY: Use consistent spacing throughout */
+.manga {
+  background-color: #202871;
+  color: #E8E8E8;
+}
+
+.one_shot {
+  background-color: #9E9E9E;
+  color: white;
+}
+
+.doujinshi {
+  background-color: #8d42a2;
+  color: white;
+}
+
+/* 💡 TIP: Class uses hyphen but HTML might use underscore
+   NAMING: .light-novel in CSS vs light_novel in HTML (line 29)
+   CONSISTENCY: Decide on one naming convention: either hyphens or underscores */
+.light-novel {
+  background-color: #8bb6eb;
+  color: white;
+}
+
+.novel {
+  background-color: #8D6E63;
+  color: white;
+}
+
+.manhwa {
+  background-color: #cd7c63;
+  color: white;
+}
+
+.manhua {
+  background-color: #cd6363;
+  color: white;
+}
+
+/* ⚠️ CRITICAL ISSUE: This gradient overwrites ALL specific background-colors above!
+   WHY IT'S WRONG: You set unique colors (lines 2, 6, 10, etc.) then override them here
+   PROBLEM: All manga types will have the same blue gradient, not their unique colors
+   FIX: Remove the background property here, or remove individual background-colors above
+   ALSO: Missing space after .one_shot, and extra empty line before closing brace */
+.manga,
+.one_shot,
+.doujinshi,
+.light_novel,
+.novel,
+.manhua,
+.manhwa {
+  color: black;
+  background: linear-gradient(135deg, #D9A29980, #D9A299);
+  padding: 3px 5px;
+  border-radius: 6px;
   flex-shrink: 0;
 
-  }
-  .Completed, .Publishing, .On_hiatus, .Canceled{
-    padding: 3px 8px;
-    border-radius: 16px;
-  }
+}
+
+/* ✅ GOOD: DRY principle - shared properties in one rule
+   WHY IT'S GOOD: Reduces repetition, easier to maintain
+   NOTE: Could combine with the rule above since padding/border-radius are same */
+.Completed,
+.Publishing,
+.On_hiatus,
+.Canceled {
+  padding: 3px 5px;
+  border-radius: 6px;
+}
 
 
-  .Completed{
-    background-color: #546e7a;
-    background: linear-gradient(135deg, #7a8c93ab, #324a56);
-    color: white;
-  }
-  .Publishing{
-    background-color: #499141;
-    background: linear-gradient(135deg, #91b88d95, #45a43b);
-    color: white;
-  }
-  .On_hiatus{
-    background-color: #f8c93a;
-    background: linear-gradient(135deg, #b8b09895, #f8c93a);
-    color: #212529;
-  }
-  .Canceled{
-    background-color: #C62828;
-    background: linear-gradient(135deg, #c68e8e95, #C62828);
-    color: white;
-  }
+.Completed {
+  background-color: #546e7a;
+  background: linear-gradient(145deg, #00000000 1%, #324a56 99%);
+  color: white;
+}
+
+.Publishing {
+  background-color: #499141;
+  background: linear-gradient(135deg, #00000000, #45a43b);
+  color: white;
+}
+
+.On_hiatus {
+  background-color: #f8c93a;
+  background: linear-gradient(135deg, #00000000, #f8c93a);
+  color: #212529;
+}
+
+.Canceled {
+  background-color: #C62828;
+  background: linear-gradient(135deg, #00000000, #C62828);
+  color: white;
+}
