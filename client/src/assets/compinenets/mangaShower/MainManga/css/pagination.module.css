@@ -15,16 +15,10 @@
   color: #FAF7F3;
 }
 
-/* ⚠️ CRITICAL ISSUE: display: flex with grid-template-columns
-   WHY IT'S WRONG: grid-template-columns only works with display: grid
-   PROBLEM: The grid-template-columns property is being ignored completely
-   FIX: Either use display: grid or remove grid-template-columns
-   CURRENT: This is using flexbox, so the grid property does nothing */
 .container {
-  margin: 10px 0 100px 0;
+  margin: 10px 0 10px 0;
   min-width: 300px;
   display: flex;
-  grid-template-columns: repeat(9, 1fr);
   gap: 10px;
   align-items: center;
   justify-content: center;
