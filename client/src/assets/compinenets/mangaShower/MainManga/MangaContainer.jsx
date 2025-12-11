@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import {useEffect, useLayoutEffect, useMemo, useRef, useState, useContext} from 'react';
 import axios from 'axios';
 import { MangaCard } from './MangaCard';
 import { MangaCardSkel } from '../mainMangaSkel/mangaCardSkel';
@@ -7,10 +7,14 @@ import { Pagination } from './pagination';
 import { FilterContext } from "./context.js";
 import './css/MangaContainer.css'
 import { FilterSkel } from "../mainMangaSkel/filterSkel.jsx";
-import { useIsMobile } from '../../smallComponents/IsMobileProvider.jsx';
+import { gsap } from 'gsap';
+import { Observer } from 'gsap/Observer.js';
+import {MangaPage} from "../../mangaPage.jsx";
+import {useGSAP} from "@gsap/react";
 
 export function MangaContainer() {
 
+  gsap.registerPlugin(Observer);
   const mangaContainerRef = useRef(null);
   // const [mangaContainerWidth, setMangaContainerWidth] = useState(null)
 
@@ -18,6 +22,8 @@ export function MangaContainer() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [staticLoading, setStaticLoading] = useState(true);
+  const [isWheeling, setIsWheeling]= useState(null);
+  const dragLock = useRef(false);
 
   const [mangas, setMangas] = useState([]);
 
@@ -53,6 +59,28 @@ export function MangaContainer() {
 
     return `rgba(${r},${g},${b}, ${opacity})`;
   }
+  //
+  // useGSAP(() => {
+  //   Observer.create({
+  //     target: window,
+  //     type: "touch",
+  //     onPress: () => {
+  //       dragLock.current = false;
+  //     },
+  //     onChangeY:(self) => {
+  //       if (dragLock.current) return;
+  //       const distance = Math.abs(self.startY - self.y)
+  //       if (distance > 50) {
+  //         dragLock.current = true;
+  //         setIsWheeling(true);
+  //       }
+  //     },
+  //     onStop: () => {
+  //       dragLock.current = false;
+  //       setIsWheeling(false);
+  //     }
+  //   })
+  // }, {}) // it have a initial stutter at wheeling for some reason everytime u have to first stutter at when the stuttering triggers and then smooth till the next wheeling
   const colors = [
     "#FF6B6B",
     "#4ECDC4",
@@ -169,6 +197,7 @@ export function MangaContainer() {
         {loading ? Array.from({ length: parseInt(limit, 10) }, (_, i) => <MangaCardSkel key={i} color={randomColorsMemo[i]} />) :
           mangas.map((e, i) =>
             <MangaCard
+              isWheeling={isWheeling}
               color={randomColorsMemo[i]}
               key={e.id}
               main_picture_large={e.main_picture_large}

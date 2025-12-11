@@ -10,6 +10,7 @@ export function SearchResult(props) {
 
   const bgRef = useRef(null)
   const imgRef = useRef(null)
+  const loaderTlRef = useRef(null)
 
   const [imgLoading, setImgLoading] = useState(true)
 
@@ -24,6 +25,10 @@ export function SearchResult(props) {
   };
 
   useEffect(() => {
+    setImgLoading(true)
+  }, [main_image_medium])
+
+  useEffect(() => {
     const img = imgRef.current
     if (!img) return;
     if (!imgLoading) return;
@@ -33,34 +38,40 @@ export function SearchResult(props) {
       img.addEventListener('load', handleImgLoad)
       return () => img.removeEventListener('load', handleImgLoad)
     }
-  }, [])
+  }, [imgLoading, main_image_medium])
 
   useGSAP(() => {
 
-    const tlIn = gsap.timeline({ paused: true })
-      .to(bgRef.current, {
-        backgroundPositionX: '0%',
-        duration: 1.5,
-        ease: 'none',
-        repeat: -1,
-      })
+    const bgEl = bgRef.current
+    const imgEl = imgRef.current
+    if (!bgEl || !imgEl) return
 
     if (imgLoading) {
-      tlIn.play()
-      return
-    } else {
-      gsap.from(imgRef.current, {
-        opacity: 0,
-        duration: 0.3,
-        ease: 'none',
-        onComplete: () => {
-          console.log('img loaded')
-          tlIn.kill()
-        }
-      })
+      loaderTlRef.current?.kill()
+      loaderTlRef.current = gsap.timeline({ paused: true })
+        .to(bgEl, {
+          backgroundPositionX: '0%',
+          duration: 1.5,
+          ease: 'none',
+          repeat: -1,
+        })
+      loaderTlRef.current.play()
+      return () => {
+        loaderTlRef.current?.kill()
+        loaderTlRef.current = null
+      }
     }
 
-  }, [imgLoading])
+    loaderTlRef.current?.kill()
+    loaderTlRef.current = null
+
+    return gsap.from(imgEl, {
+      opacity: 0,
+      duration: 0.3,
+      ease: 'power1.out',
+    })
+
+  }, [imgLoading, main_image_medium])
   const statusClass = statusMap[status] || 'NA';
   const CapitalizedMediaType = media_type ? media_type.charAt(0).toUpperCase() + media_type.slice(1) : '';
 

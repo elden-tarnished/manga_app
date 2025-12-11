@@ -1,20 +1,24 @@
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import styles from './footer.module.css'
 import { gsap } from 'gsap'
 import { useGSAP } from '@gsap/react'
-import ScrambleTextPlugin from 'gsap/ScrambleTextPlugin'
+import { SplitText } from 'gsap/SplitText'
+import { useIsMobile } from '../smallComponents/IsMobileProvider.jsx'
 
 export function Footer() {
-  gsap.registerPlugin(ScrambleTextPlugin)
+  gsap.registerPlugin(SplitText)
   const year = new Date().getFullYear()
 
   const contactRef = useRef([])
   const footerAndYear = useRef(null)
-  const telegramRef = useRef(null)
-  const telegramAnimRef = useRef(null)
   const githubRef = useRef(null)
-  const githubAnimRef = useRef(null)
+  const telegramRef = useRef(null)
+  const incremt = useRef(0)
+  const isMobile = useIsMobile()
 
+  const anchorTagAnimation = useRef(null)
+  const inTl = useRef(null)
+  const outTl = useRef(null)
 
   function hexToRgba(hexColor, opacity) {
     let hex = hexColor.replace('#', '')
@@ -28,11 +32,10 @@ export function Footer() {
   }
 
 
-  function spanmaker(times, content, ref, hexEndColor) {
+  function buildCopySpans(times, content, ref, hexEndColor) {
+    if (isMobile) return
 
     const contentClass = content.split(' ').join('')
-    console.log(content)
-
     const classname = `${contentClass}_copy`
 
 
@@ -43,44 +46,27 @@ export function Footer() {
     })
   }
 
-  const contactcopy = spanmaker(20, 'Contact Me', contactRef, '#faf7f3')
+  const contactcopy = useMemo(() => buildCopySpans(20, 'Contact Me', contactRef, '#faf7f3'), [])
 
   const { contextSafe } = useGSAP(() => {
-    const insetTl =
-      gsap.timeline()
-        .to(telegramRef.current, {
-          clipPath: 'inset(0 0% 0 0%)',
-          duration: 0.8
-        })
-    const inTl = gsap.timeline()
-      .to(telegramAnimRef.current, {
-        color: 'black',
-        scrambleText: {
-          text: '{original}',
-          chars: 'lowercase',
-          speed: 5,
-        },
-        duration: 1,
-        ease: 'power1.out'
-      }, 0)
-
-    const outTl =
-      gsap.timeline()
-        .to(telegramRef.current, {
-          clipPath: 'inset(0 0% 0 100%)',
-          onComplete: () => gsap.set(telegramRef.current, { clipPath: 'inset(0 100% 0 0%)' })
-        })
-        .to(telegramAnimRef.current, {
-          color: 'white'
-        }, 0)
 
   }, { scope: footerAndYear })
 
-  const onMouseOverKPR = contextSafe(() => {
-
+  const onMouseOverAnchorTag = contextSafe((itemToAnimateRef) => {
+    const split = SplitText.create(itemToAnimateRef.current, { type: 'chars' })
+    anchorTagAnimation.current = gsap.timeline({ paused: true })
+      .to(split.chars, {
+        stagger: 0.05,
+        ease: 'power2.out',
+        scale: 1.6,
+        fontWeight: 500,
+        marginRight: 8,
+        duration: 0.3
+      })
+    anchorTagAnimation.current.play()
   })
-  const onMouseLeaveKPR = contextSafe(() => {
-
+  const onMouseLeaveAnchorTag = contextSafe(() => {
+    anchorTagAnimation.current.reverse()
   })
 
   const onMouseEnter = contextSafe(() => {
@@ -118,20 +104,20 @@ export function Footer() {
             onMouseLeave={onMouseLeave}
           ><span className={styles.contactHidden}>Contact Me</span><span className={styles.contactSpan}>Contact Me</span> {contactcopy}</a>
           <a href=''
-            className={styles.animation__container}
-            onMouseOver={onMouseOverKPR}
-            onMouseLeave={onMouseLeaveKPR}
+            className={styles.anchor_animation}
+            ref={telegramRef}
+            onMouseEnter={() => onMouseOverAnchorTag(telegramRef)}
+            onMouseLeave={() => onMouseLeaveAnchorTag(telegramRef)}
           >
-            <span className={styles.space} ref={telegramRef}>telegram</span>
-            <span className={styles.animation} ref={telegramAnimRef}>telegram</span>
+            Telegram
           </a>
           <a href=''
-            className={styles.animation__container}
-            onMouseDown={onMouseOverKPR}
-            onMouseLeave={onMouseLeaveKPR}
+            className={styles.anchor_animation}
+            ref={githubRef}
+            onMouseEnter={() => onMouseOverAnchorTag(githubRef)}
+            onMouseLeave={() => onMouseLeaveAnchorTag(githubRef)}
           >
-            <span className={styles.space} ref={githubRef}>github</span>
-            <span className={styles.animation} ref={githubAnimRef}>github</span>
+            Github
           </a>
         </div>
       </div>
@@ -140,7 +126,7 @@ export function Footer() {
         <div className=''>
           <p className={styles.p}>all rights reserved. manga data courtesy of myanimelist.net—used under their terms. this is an unofficial fan site.</p>
           <div className={styles.terms}>
-            <a href="">DMACA</a>
+            <a href="">DMCA</a>
             <a href="">Privacy</a>
             <a href="">Terms</a>
           </div>

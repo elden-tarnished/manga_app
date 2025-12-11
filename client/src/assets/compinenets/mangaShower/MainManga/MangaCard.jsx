@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import './css/MangaCard.css';
 import '../../smallComponents/mangaStatus.css';
 import { useGSAP } from "@gsap/react";
@@ -15,7 +15,8 @@ export function MangaCard(props) {
     // english_title, rank, popularity,
     start_date = '', end_date = '', synopsis, mean,
     status, media_type, num_volumes,
-    color
+    color,
+    isWheeling
   } = props;
   // const {loading} = useContext(FilterContext);
 
@@ -28,14 +29,13 @@ export function MangaCard(props) {
 
   const [isRight, setIsRight] = useState(false);
   const [imgLoading, setImgLoading] = useState(true);
-  const [isIntersecting, setIsIntersecting] = useState(false);
-  // const [imgWidth, setImgWidth] = useState(184);
-  // const [windowWidth, setWindowWidth] = useState(null);
 
   const bgRef = useRef(null);
   const cardRef = useRef(null);
   const imgRef = useRef(null);
   const titleRef = useRef(null)
+  const overlay = useRef(null);
+  const tlFunc = useRef(() => {});
 
   const detailAndSynopsisRef = useRef(null);
   const detailRef = useRef(null);
@@ -54,7 +54,6 @@ export function MangaCard(props) {
   const dateEndRef = useRef(null);
 
   const tlDetailPauseThreshold = useRef(null);
-  const loadingTl = useRef(null);
 
   const statusMap = {
     finished: 'Completed',
@@ -65,10 +64,6 @@ export function MangaCard(props) {
 
   useEffect(() => {
 
-    const rect = cardRef.current.getBoundingClientRect()
-    const viewportWidth = window.offsetWidth || document.documentElement.clientWidth;
-    const newIsRight = (rect.right > viewportWidth * 0.85)
-    setIsRight(newIsRight);
 
     const img = imgRef.current;
     const handleImgLoad = () => setImgLoading(false)
@@ -82,6 +77,13 @@ export function MangaCard(props) {
     }
 
   }, [isMobile])
+
+  useLayoutEffect(() => {
+    const rect = cardRef.current.getBoundingClientRect()
+    const viewportWidth = window.offsetWidth || document.documentElement.clientWidth;
+    const newIsRight = (rect.right > viewportWidth * 0.80)
+    setIsRight(newIsRight);
+  }, [isMobile]);
 
   useGSAP(() => {
     const tl = gsap.timeline()
@@ -209,7 +211,22 @@ export function MangaCard(props) {
           duration: 0.2
         })
 
-      ;
+    tlFunc.current = () =>  {
+      const pauseTime = tlDetailPauseThreshold.current;
+      if (tlDetail.time() > pauseTime) {
+        tlCard.timeScale(2).reverse().eventCallback('onUpdate', () => {
+          tlSynopsis.timeScale(2).reverse().eventCallback('onReverseComplete', () => {
+            tlSynopsis.revert();
+            tlDetail.revert();
+            tlyoyo.revert();
+          })
+        })
+      } else {
+        tlCard.timeScale(2).reverse()
+        tlyoyo.revert();
+      }
+    }
+
     Observer.create({
       target: cardRef.current,
       type: 'pointer',
@@ -238,8 +255,8 @@ export function MangaCard(props) {
       }
     });
     Observer.create({
-      target: [detailRef.current, cardRef.current],
-      type: 'touch',
+      target: [imgRef.current, detailRef.current],
+      type: 'touch, pointer',
       tolerance: 20,
 
       onRight: () => {
@@ -250,19 +267,20 @@ export function MangaCard(props) {
         tlyoyo.play(0)
       },
       onLeft: () => {
-        const pauseTime = tlDetailPauseThreshold.current;
-        if (tlDetail.time() > pauseTime) {
-          tlCard.timeScale(2).reverse().eventCallback('onUpdate', () => {
-            tlSynopsis.timeScale(2).reverse().eventCallback('onReverseComplete', () => {
-              tlSynopsis.revert();
-              tlDetail.revert();
-              tlyoyo.revert();
-            })
-          })
-        } else {
-          tlCard.timeScale(2).reverse()
-          tlyoyo.revert();
-        }
+        // const pauseTime = tlDetailPauseThreshold.current;
+        // if (tlDetail.time() > pauseTime) {
+        //   tlCard.timeScale(2).reverse().eventCallback('onUpdate', () => {
+        //     tlSynopsis.timeScale(2).reverse().eventCallback('onReverseComplete', () => {
+        //       tlSynopsis.revert();
+        //       tlDetail.revert();
+        //       tlyoyo.revert();
+        //     })
+        //   })
+        // } else {
+        //   tlCard.timeScale(2).reverse()
+        //   tlyoyo.revert();
+        // }
+        tlFunc.current()
       }
     })
 
@@ -313,16 +331,23 @@ export function MangaCard(props) {
       },
     })
 
-  }, { dependencies: [imgLoading, isMobile], scope: cardRef.current });
+  }, { dependencies: [imgLoading, isMobile]});
+  useGSAP(() => {
+    if (!isWheeling) return;
+    console.log('isWheeling', isWheeling);
+    tlFunc.current()
+
+
+  }, { dependencies: [isWheeling], scope: cardRef })
 
   const statusClass = statusMap[status] || 'NA';
   const CapitalizedMediaType = media_type ? media_type.charAt(0).toUpperCase() + media_type.slice(1) : '';
-  console.log('ismobile: ', isMobile)
   return (
     <>
       <div className={`whole ${isRight ? "right" : "left"}`}
         ref={cardRef}
       >
+       <div ref={overlay} className="overlay"></div>
         <div
           className="card"
           draggable='false'

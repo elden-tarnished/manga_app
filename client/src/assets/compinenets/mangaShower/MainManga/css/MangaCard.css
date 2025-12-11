@@ -207,7 +207,17 @@
   z-index: 1;
   top: 0px;
 }
-
+/*.overlay {*/
+/*    position: absolute;*/
+/*    width: 184px;*/
+/*    height: 280px;*/
+/*    background-color: black;*/
+/*    opacity: 0.3;*/
+/*    top: 0;*/
+/*    right: 0;*/
+/*    left: 0;*/
+/*    z-index: 20;*/
+/*}*/
 /* ✅ GOOD: Using !important in media queries (lines 144, 148) to override desktop styles
    WHY: This is acceptable when overriding base styles in responsive design
    NOTE: Regular use of !important should still be avoided when possible */
