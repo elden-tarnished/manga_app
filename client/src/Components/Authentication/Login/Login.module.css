@@ -1,0 +1,8 @@
+/* Login-specific overrides */
+
+/* Narrower card for login (fewer fields) */
+
+/* Space-between layout for login meta row */
+.metaRow {
+  justify-content: space-between;
+}

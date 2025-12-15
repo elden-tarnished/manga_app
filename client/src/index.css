@@ -9,3 +9,16 @@
   align-items: center;
   font-family: 'DM Sans', sans-serif;
 }
+
+:root {
+  --color-surface-0: #faf7f3;
+  --color-surface-1: #f0e4d3;
+  --color-surface-2: #dcc5b2;
+  --color-border-1: #d9a299;
+  --color-accent: #ba487f;
+  --color-text: #0b0c10;
+  --color-text-muted: rgba(11, 12, 16, 0.65);
+  --shadow-1: 0 0 8px rgba(0, 0, 0, 0.35);
+  --radius-pill: 999px;
+  --radius-card: 16px;
+}

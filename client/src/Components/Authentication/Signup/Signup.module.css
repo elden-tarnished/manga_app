@@ -1,0 +1,11 @@
+/* Signup-specific overrides */
+
+/* Wider card for signup (more fields) */
+.card {
+  width: min(520px, 100%);
+}
+
+/* Flex-start layout for signup meta row */
+.metaRow {
+  justify-content: flex-start;
+}
