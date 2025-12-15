@@ -1,4 +1,4 @@
-    import env from "dotenv";
+    import "../../config/env.js";
     import pg from "pg";
     import fs from "fs";
     import path from "path";
@@ -6,7 +6,6 @@
 
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
-    env.config({path: path.resolve(__dirname, '../../../.env')});
 
     const db = new pg.Pool({
         user: process.env.DB_USER,

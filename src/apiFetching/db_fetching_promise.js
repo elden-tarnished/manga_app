@@ -152,6 +152,7 @@ async function downloadFileAndDB(fileUrl, downlaodFolder, fileName) {
   });
 }
 
+
 //promise for array to id
 // async function ensureRelatedMangaIdsExist(array) {
 //     const godDid = array.node;
