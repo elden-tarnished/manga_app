@@ -11,10 +11,14 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 40px;
+  gap: 30px;
   justify-content: center;
   padding: 30px;
   background-color: #F0E4D3;
+}
+
+.paginationMangaContainer {
+  height: 59px;
 }
 
 @media (max-width: 768px) {

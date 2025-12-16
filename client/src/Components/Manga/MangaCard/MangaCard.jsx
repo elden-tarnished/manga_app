@@ -15,6 +15,7 @@ export function MangaCard(props) {
     status, media_type, num_volumes,
     color,
   } = props;
+  const { setImgLoaded } = props
 
   const isMobile = useIsMobile()
 
@@ -82,26 +83,31 @@ export function MangaCard(props) {
   }, [isMobile]);
 
   useGSAP(() => {
-
-    if (bgRef.current === null) return;
     const tl = gsap.timeline({ paused: true })
-      .to(bgRef.current, {
+    if (bgRef.current === null) return;
+    if (!imgLoading) {
+      tl.to(bgRef.current, {
         backgroundPositionX: '0%',
         duration: 1.5,
         ease: 'none',
         repeat: -1,
       })
+    }
+
     if (imgLoading) {
       tl.play()
     } else {
       gsap.to(imgRef.current, {
         opacity: 1,
-        duration: 1
-      }).eventCallback('onComplete', () => {
-        tl.revert()
+        stagger: 0.04,
+        duration: 0.5,
+        ease: 'none',
+        oncomplete: () => {
+          console.log('image animation complete')
+        }
       })
     }
-  }, { dependencies: [imgLoading], scope: imgRef })
+  }, { dependencies: [imgLoading], scope: cardRef });
 
 
   useGSAP(() => {
@@ -322,7 +328,7 @@ export function MangaCard(props) {
             backgroundSize: '600% 100%'
           }}
           ref={bgRef}>
-          <img ref={imgRef} className={'img'} src={main_picture_large} alt={title} draggable='false' />
+          <img ref={imgRef} className="img" src={main_picture_large} alt={title} draggable='false' />
           <h4 className="title center-text" ref={titleRef}>{title}</h4>
         </div>
         <div className={`detail-and-synopsis__container ${isRight ? "rightC" : "leftC"}`} ref={detailAndSynopsisRef}>

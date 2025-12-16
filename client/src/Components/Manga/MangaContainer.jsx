@@ -1,13 +1,13 @@
-import {useEffect, useMemo, useRef, useState} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
-import {MangaCard} from './MangaCard/MangaCard.jsx';
-import {MangaCardSkel} from '../../Skeletons/MangaCard/MangaCard.jsx'
-import {Filter} from '../Filter/Filter.jsx';
-import {Pagination} from './Pagination/Pagination.jsx';
-import {FilterContext} from "../SmallComponents/FilterContext.js";
-import {FilterSkel} from "../../Skeletons/Filter/Filter.jsx";
-import {gsap} from 'gsap';
-import {Observer} from "gsap/Observer"
+import { MangaCard } from './MangaCard/MangaCard.jsx';
+import { MangaCardSkel } from '../../Skeletons/MangaCard/MangaCard.jsx'
+import { Filter } from '../Filter/Filter.jsx';
+import { Pagination } from './Pagination/Pagination.jsx';
+import { FilterContext } from "../SmallComponents/FilterContext.js";
+import { FilterSkel } from "../../Skeletons/Filter/Filter.jsx";
+import { gsap } from 'gsap';
+import { Observer } from "gsap/Observer"
 import './MangaContainer.css'
 
 export function MangaContainer() {
@@ -184,7 +184,8 @@ export function MangaContainer() {
   return (<div className='body'>
     <FilterContext value={filter}>
       {staticLoading ?
-        <FilterSkel /> :
+        <FilterSkel />
+        :
         <Filter FilterOptions={data.sortOption} />
       }
       <div className='manga__container' ref={mangaContainerRef}>
@@ -207,7 +208,7 @@ export function MangaContainer() {
             />
           )}
       </div>
-      {staticLoading ? <h1>pagination loading...</h1> :
+      {staticLoading ? <h1 className='paginationMangaContainer'>pagination loading...</h1> :
         <Pagination maxPageNum={data.maxPageNum} />}
     </FilterContext>
   </div>)
