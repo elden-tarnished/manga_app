@@ -1,19 +1,13 @@
-/* ⚠️ STYLE ISSUES:
-   1. No space after selector: .card--skel{
-   2. Extra space in "184px ;" - should be "184px;"
-   3. Empty line before position - inconsistent spacing
-   WHY IT MATTERS: Professional code follows consistent formatting conventions */
-
-.card--skel{
-  width: 184px ;
-  height: 280px;
-  border-radius: 16px;
+.card--skel {
+  width: 186px;
+  height: 282px;
+  border-radius: 10px;
 
   position: relative;
   flex-shrink: 0;
 }
 
-.title--skel{
+.title--skel {
   height: 34px;
   width: 168px;
   margin: 5px 8px;
@@ -23,18 +17,18 @@
   bottom: 0;
   right: 0;
   left: 0;
-
-  background: linear-gradient(90deg, rgb(203, 198, 204) 10%, rgb(242, 229, 246) 50%, rgb(203, 198, 204) 100%);
-  background-size: 200% 100%;
+  background-color: #000000a6;
 }
+
 @media (max-width: 768px) {
-  .card--skel{
+  .card--skel {
     width: 147px;
     height: 224px;
   }
-  .title--skel{
+
+  .title--skel {
     height: 32px;
     width: 131px;
   }
-  
+
 }

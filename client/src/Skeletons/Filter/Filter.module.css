@@ -1,77 +1,78 @@
-/* ⚠️ STYLE ISSUE: No space after selector
-   WHY IT MATTERS: Standard practice is .filter__container { with a space
-   READABILITY: Makes code more readable and follows conventions */
-.filter__container{
-    display: flex;
-    flex-direction: row-reverse;
-    margin-top: 10px;
-    overflow: hidden;
-    border-radius: 22px;
-    gap: 10px;
-    padding: 10px;
-    width: 90vw;
-    height: 49px;
-    background-color: #F5F5F5;
-    flex-wrap: wrap;
+.filter__container {
+  display: flex;
+  flex-direction: row-reverse;
+  margin-bottom: 20px;
+  overflow: hidden;
+  border-radius: 22px;
+  gap: 10px;
+  padding: 10px;
+  width: 90vw;
+  height: 49px;
+  background-color: transparent;
+  flex-wrap: wrap;
 }
+
 .filter__expand {
-    border-radius: 20px;
-    color: transparent;
-    border: 0;
-    background-color: black;
-    flex-grow: 1;
+  border-radius: 20px;
+  color: transparent;
+  border: 0;
+  background-color: black;
+  flex-grow: 1;
 
 }
 
 
-/* ⚠️ STYLE ISSUE: No space after selector (same issue throughout file)
-   💡 TIP: These skeleton loaders look good with gradient animations!
-   CONSISTENCY: Add space after selector: .limit__container { */
-.limit__container{
-    min-width: 339px;
-    min-height: 49px;
-    border-radius: 16px;
-    flex-grow: 0;
-    flex-shrink: 1;
-    background: linear-gradient(105deg, #e4eaec 40%, #d4d1da 50%, #e4eaec 60%) 100% 0;
-    background-size: 400% 100%;
+.limit__container,
+.direction__container,
+.order__container {
+  background: linear-gradient(105deg, #F0E4D3 40%, #FAF7F3 50%, #F0E4D3 60%) 100% 0;
+  background-size: 400% 100%;
 }
-.direction__container{
-    min-width: 261px;
-    min-height: 49px;
-    border-radius: 16px;
-    flex-grow: 0;
-    flex-shrink: 1;
-    background: linear-gradient(105deg, #e4eaec 45%, #d4d1da 50%, #e4eaec 60%) 100% 0;
-    background-size: 400% 100%;
+
+.limit__container {
+  min-width: 289px;
+  min-height: 49px;
+  border-radius: 16px;
+  flex-grow: 0;
+  flex-shrink: 1;
 }
-.order__container{
-    min-width: 344px;
-    min-height: 49px;
-    border-radius: 16px;
-    flex-grow: 0;
-    flex-shrink: 1;
-    background: linear-gradient(105deg, #e4eaec 40%, #d4d1da 50%, #e4eaec 60%) 100% 0;
-    background-size: 400% 100%;
+
+.direction__container {
+  min-width: 273px;
+  min-height: 49px;
+  border-radius: 16px;
+  flex-grow: 0;
+  flex-shrink: 1;
+}
+
+.order__container {
+  min-width: 376px;
+  min-height: 49px;
+  border-radius: 16px;
+  flex-grow: 0;
+  flex-shrink: 1;
 }
 
 @media (max-width: 768px) {
-    .filter__container{
-        width: 90vw;
-        padding: 5px;
-        height: 49px;
-    }
-    .direction__container{
-        min-width: 235px;
-        min-height: 47px;
-    }
-    .order__container{
-        min-width: 282px;
-        min-height: 47px;
-    }
-    .filter__expand {
-        border-radius: 20px;
-        color: transparent;
+  .filter__container {
+    width: 98vw;
+    padding: 5px;
+    height: 41px;
+  }
 
-    }
+  .direction__container {
+    min-width: 235px;
+    min-height: 41px;
+  }
+
+  .order__container {
+    min-width: 309px;
+    min-height: 41px;
+  }
+
+  .filter__expand {
+    border-radius: 20px;
+    color: transparent;
+
+  }
 }
