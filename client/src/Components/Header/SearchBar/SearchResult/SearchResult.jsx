@@ -25,10 +25,6 @@ export function SearchResult(props) {
   };
 
   useEffect(() => {
-    setImgLoading(true)
-  }, [main_image_medium])
-
-  useEffect(() => {
     const img = imgRef.current
     if (!img) return;
     if (!imgLoading) return;
@@ -41,37 +37,34 @@ export function SearchResult(props) {
   }, [imgLoading, main_image_medium])
 
   useGSAP(() => {
-
     const bgEl = bgRef.current
     const imgEl = imgRef.current
     if (!bgEl || !imgEl) return
+    gsap.set(imgEl, { opacity: 0 })
 
+    const loaderTl = gsap.timeline({ paused: true });
     if (imgLoading) {
-      loaderTlRef.current?.kill()
-      loaderTlRef.current = gsap.timeline({ paused: true })
-        .to(bgEl, {
-          backgroundPositionX: '0%',
-          duration: 1.5,
-          ease: 'none',
-          repeat: -1,
-        })
-      loaderTlRef.current.play()
-      return () => {
-        loaderTlRef.current?.kill()
-        loaderTlRef.current = null
-      }
+      loaderTl.to(bgEl, {
+        backgroundPositionX: '0%',
+        duration: 1.5,
+        ease: 'none',
+        repeat: -1,
+      })
+      loaderTl.play();
     }
 
-    loaderTlRef.current?.kill()
-    loaderTlRef.current = null
+    if (!imgLoading) {
+      gsap.to(imgEl, {
+        opacity: 1,
+        duration: 0.3,
+        ease: 'power1.out',
+        oncomplete: () => {
+          loaderTl.revert();
+        }
+      })
+    }
 
-    return gsap.from(imgEl, {
-      opacity: 0,
-      duration: 0.3,
-      ease: 'power1.out',
-    })
-
-  }, [imgLoading, main_image_medium])
+  }, { scope: imgRef, dependencies: [imgLoading] })
   const statusClass = statusMap[status] || 'NA';
   const CapitalizedMediaType = media_type ? media_type.charAt(0).toUpperCase() + media_type.slice(1) : '';
 
