@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router';
 import sharedStyles from '../AuthShared.module.css';
 import styles from './Login.module.css';
 import axios from 'axios';
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -24,6 +27,7 @@ export default function Login() {
       );
 
       console.log('Login successful:', res.data);
+      navigate('/');
     } catch (err) {
       const message = err?.response?.data?.error || 'Login failed';
       setError(message);
@@ -74,13 +78,16 @@ export default function Login() {
           </button>
 
           <div className={`${sharedStyles.metaRow} ${styles.metaRow}`}>
-            <button className={sharedStyles.linkButton} type="button">
+            <Link to="/signup" className={sharedStyles.linkButton}>
               Create account
-            </button>
+            </Link>
             <button className={sharedStyles.linkButton} type="button">
               Forgot password?
             </button>
           </div>
+          <Link to="/" className={sharedStyles.linkButton}>
+            ← Back to manga
+          </Link>
         </form>
       </section>
     </main>

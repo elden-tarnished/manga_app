@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router';
 import axios from 'axios';
 import sharedStyles from '../AuthShared.module.css';
 import styles from './Signup.module.css';
 
 export default function Signup() {
+  const navigate = useNavigate();
+
   const URL = 'http://localhost:3000';
 
   const [name, setName] = useState('');
@@ -32,6 +35,8 @@ export default function Signup() {
       setUsername('');
       setEmail('');
       setPassword('');
+
+      navigate('/login');
     } catch (err) {
       const message =
         err?.response?.data?.error ||
@@ -99,10 +104,14 @@ export default function Signup() {
           </button>
 
           <div className={`${sharedStyles.metaRow} ${styles.metaRow}`}>
-            <button className={sharedStyles.linkButton} type="button">
+            <Link to="/login" className={sharedStyles.linkButton}>
               Already have an account?
-            </button>
+            </Link>
           </div>
+
+          <Link to="/" className={sharedStyles.linkButton}>
+            ← Back to manga
+          </Link>
         </form>
       </section>
     </main>

@@ -1,18 +1,7 @@
-/* 💡 TIP: Multiple commented-out properties for "TO animation"
-   WHY IT'S BAD: Clutters code and makes it hard to read
-   BETTER: Remove commented code or create a separate .expanded class
-   USE: Version control to track old code instead of comments */
-/*default filter container height*/
 .filter__container {
   height: 59px;
   width: 90vw;
   margin-bottom: 20px;
-
-  /*TO animation*/
-  /*height: fit-content;*/
-  /*width: 95vw;*/
-  /*padding: 20px;*/
-
   margin-top: 10px;
   background-color: #DCC5B2;
   border-radius: 0px;
