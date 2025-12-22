@@ -1,13 +1,17 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import axios from 'axios';
 import sharedStyles from '../AuthShared.module.css';
 import styles from './Signup.module.css';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import SplitText from 'gsap/SplitText';
 
 export default function Signup() {
   const navigate = useNavigate();
 
   const URL = 'http://localhost:3000';
+  const errorRef = useRef(null)
 
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
@@ -15,6 +19,17 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useGSAP(() => {
+    if (!errorRef.current || !error) return
+    const chars = SplitText.create(errorRef.current, { type: 'chars' }).chars
+    gsap.from(chars, {
+      opacity: 0,
+      scale: 0,
+      stagger: 0.01,
+      duration: 0.2
+    })
+  }, { dependencies: [error] })
 
   async function signupUser(e) {
     e.preventDefault();
@@ -97,7 +112,7 @@ export default function Signup() {
             />
           </label>
 
-          {error ? <p className={sharedStyles.error}>{error}</p> : null}
+          <p className={sharedStyles.error} ref={errorRef}>{error}</p>
 
           <button className={sharedStyles.primaryButton} type="submit" disabled={loading}>
             {loading ? 'Signing up…' : 'Sign up'}

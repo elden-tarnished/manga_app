@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 3;
+  z-index: 1;
   width: 60vw;
 }
 
@@ -110,5 +110,15 @@
     width: 85.5vw;
     margin-top: 10px;
     grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+@media (max-width: 425px) {
+  .input {
+    width: 76vw;
+  }
+
+  .form {
+    z-index: 13;
   }
 }

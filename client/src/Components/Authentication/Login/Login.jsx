@@ -1,17 +1,35 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router';
 import sharedStyles from '../AuthShared.module.css';
 import styles from './Login.module.css';
 import axios from 'axios';
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import SplitText from 'gsap/SplitText';
+import { useUser } from '../../../Context/UserContext.jsx';
 
 export default function Login() {
   const navigate = useNavigate();
+  const page = useRef(null)
+  const errorRef = useRef(null)
+  const { login } = useUser();
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const URL = 'http://localhost:3000';
+
+  useGSAP(() => {
+    if (!errorRef.current || !error) return
+    const chars = SplitText.create(errorRef.current, { type: 'chars' }).chars
+    gsap.from(chars, {
+      opacity: 0,
+      scale: 0,
+      stagger: 0.01,
+      duration: 0.2
+    })
+  }, { dependencies: [error] })
 
   async function loginUser(e) {
     e.preventDefault();
@@ -27,6 +45,7 @@ export default function Login() {
       );
 
       console.log('Login successful:', res.data);
+      login(res.data.user); // Update global user state
       navigate('/');
     } catch (err) {
       const message = err?.response?.data?.error || 'Login failed';
@@ -37,7 +56,7 @@ export default function Login() {
     }
   }
   return (
-    <main className={sharedStyles.page}>
+    <main className={sharedStyles.page} ref={page}>
       <section className={`${sharedStyles.card} ${styles.card}`} aria-label="Login">
         <header className={sharedStyles.header}>
           <h1 className={sharedStyles.title}>Welcome back</h1>
@@ -71,7 +90,7 @@ export default function Login() {
             />
           </label>
 
-          {error ? <p className={sharedStyles.error}>{error}</p> : null}
+          <p className={sharedStyles.error} ref={errorRef}>{error}</p>
 
           <button className={sharedStyles.primaryButton} type="submit" disabled={loading}>
             {loading ? 'Signing in…' : 'Sign in'}

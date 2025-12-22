@@ -94,8 +94,8 @@
 }
 
 @media (max-width: 768px) {
-  .user {
-    right: 30px;
+  .user__container {
+    left: -10px;
   }
 
   .background {

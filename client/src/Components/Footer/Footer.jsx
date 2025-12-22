@@ -58,6 +58,7 @@ export function Footer() {
       .to(split.chars, {
         stagger: 0.05,
         ease: 'power2.out',
+        color: '#000000',
         scale: 1.6,
         fontWeight: 500,
         marginRight: 8,
@@ -72,7 +73,6 @@ export function Footer() {
   const onMouseEnter = contextSafe(() => {
     gsap.to('.footerContactMe', {
       x: (i) => (i + 1),
-      // y: (i) => (i + 1) * 1,
       scale: (i) => 0.001 * (i + 1) + 1,
       opacity: 1,
       stagger: {

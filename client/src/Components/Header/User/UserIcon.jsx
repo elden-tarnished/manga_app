@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { useIsMobile } from "../../SmallComponents/IsMobileProvider.jsx";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
-import styles from "./User.module.css";
+import styles from "./UserIcon.module.css";
 
 const MENU_ROUTES = {
   0: '/login',    // First item navigates to login

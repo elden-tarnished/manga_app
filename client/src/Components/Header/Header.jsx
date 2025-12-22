@@ -1,6 +1,6 @@
 import { SearchBar } from "./SearchBar/SearchBar.jsx"
 import styles from "./Header.module.css"
-import {UserIcon} from "./User/User.jsx";
+import {UserIcon} from "./User/UserIcon.jsx";
 
 export function Header() {
   return (

@@ -9,7 +9,7 @@ function createMangaRoutes(db) {
 
   router.get("/", validateQuery, async (req, res) => {
     let page = parseInt(req.query.page ?? "1", 10);
-    const limit = parseInt(req.query.limit ?? "50", 10);
+    let limit = parseInt(req.query.limit ?? "50", 10);
     try {
       const result = await sortMangaByFilters(db, req.validated, {
         page: limit * (page - 1),

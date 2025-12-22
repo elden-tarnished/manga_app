@@ -6,8 +6,9 @@ import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin"
 import { Observer } from "gsap/Observer";
+import { SplitText } from "gsap/SplitText";
 
-gsap.registerPlugin(useGSAP, ScrambleTextPlugin, Observer)
+gsap.registerPlugin(useGSAP, ScrambleTextPlugin, Observer, SplitText)
 export function MangaCard(props) {
   const {
     main_picture_large, title,
@@ -122,6 +123,7 @@ export function MangaCard(props) {
     const synopsisPadding = parseFloat(synopsisStyle.getPropertyValue('padding'));
     const synopsisWidthAA = synopsisWidth + (2 * synopsisPadding);
 
+    const chars = SplitText.create(titleRef.current, { type: "chars" }).chars
     tlCard
       .to(detailAndSynopsisRef.current,
         {
@@ -139,10 +141,18 @@ export function MangaCard(props) {
           duration: 0.5
         }, 0)
       .to(titleRef.current, {
-        opacity: 0,
-        x: 10,
+        backgroundColor: 'transparent',
         pointerEvents: 'none',
-        duration: 0.3
+        duration: 0.5,
+        scale: 0.7,
+      }, 0)
+      .to(chars, {
+        scale: 0.4,
+        opacity: 0,
+        color: 'black',
+        rotateX: 90,
+        stagger: 0.05,
+        duration: 0.4
       }, 0)
 
     const tlYoyo = gsap.timeline({ paused: true }).fromTo('.svg', {
