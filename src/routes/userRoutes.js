@@ -2,6 +2,7 @@ import { Router } from "express";
 import argon2 from "argon2";
 import { argon2Options, pepper } from "../config/security.js";
 import { isAuthenticated } from "../middleware/auth.js";
+import { validatePassword, validateUsername } from "../utils/validation.js";
 
 function createUserRoutes(db) {
   const router = Router();
@@ -53,11 +54,9 @@ function createUserRoutes(db) {
             .json({ error: "Username already taken try again." });
         }
 
-        const lengthPattern = /^.{3,28}$/;
-        if (!lengthPattern.test(newUsername)) {
-          return res
-            .status(400)
-            .json({ error: "Password must range between 3 to 28 characters." });
+        const usernameValidation = validateUsername(newUsername);
+        if (!usernameValidation.valid) {
+          return res.status(400).json({ error: usernameValidation.error });
         }
 
         updateStatements.push(() =>
@@ -104,36 +103,9 @@ function createUserRoutes(db) {
       if (updates.password) {
         const newPlainTextPass = updates.password;
 
-        const lowerCasePattern = /(?=.*[a-z])/;
-        const upperCasePattern = /(?=.*[A-Z])/;
-        const digitPattern = /(?=.*\d)/;
-        const specialPattern = /(?=.*[!@#$%^&*()_+={};"'<>,./])/;
-        const lengthPattern = /^.{8,28}$/;
-
-        if (!lowerCasePattern.test(newPlainTextPass)) {
-          return res.status(400).json({
-            error: "Password must contain a lowercase letter ex.(abcde...)",
-          });
-        }
-        if (!upperCasePattern.test(newPlainTextPass)) {
-          return res.status(400).json({
-            error: "Password must contain a uppercase letter ex.(ABCDEF...)",
-          });
-        }
-        if (!digitPattern.test(newPlainTextPass)) {
-          return res
-            .status(400)
-            .json({ error: "Password must contain a digit ex.(12345...)" });
-        }
-        if (!specialPattern.test(newPlainTextPass)) {
-          return res.status(400).json({
-            error: "Password must contain special characters ex.(!@#$%^&*...).",
-          });
-        }
-        if (!lengthPattern.test(newPlainTextPass)) {
-          return res
-            .status(400)
-            .json({ error: "Password must range between 8 to 28 characters." });
+        const passwordValidation = validatePassword(newPlainTextPass);
+        if (!passwordValidation.valid) {
+          return res.status(400).json({ error: passwordValidation.errors[0] });
         }
 
         const passCheck = await argon2.verify(
@@ -200,6 +172,43 @@ function createUserRoutes(db) {
       console.error("Error posting user ID: ", err);
       return res.status(500).json({ error: "Internal server error." });
     }
+  });
+
+  router.post("/check-username", isAuthenticated, async (req, res) => {
+    const { username } = req.body;
+    const userId = req.user.id;
+
+    // Use shared validation
+    const usernameValidation = validateUsername(username);
+    if (!usernameValidation.valid) {
+      return res.status(200).json({ valid: false, error: usernameValidation.error });
+    }
+
+    try {
+      // Check if it's the current user's username
+      const currentUserResult = await db.query("SELECT username FROM users WHERE id = $1", [userId]);
+      if (currentUserResult.rows[0].username === username) {
+        return res.status(200).json({ valid: true, available: false, reason: "same_as_current" });
+      }
+
+      // Check if taken by others
+      const checkResult = await db.query("SELECT 1 FROM users WHERE username = $1", [username]);
+      if (checkResult.rows.length > 0) {
+        return res.status(200).json({ valid: false, available: false, error: "Username is already taken" });
+      }
+
+      return res.status(200).json({ valid: true, available: true });
+    } catch (err) {
+      console.error("Error checking username:", err);
+      return res.status(500).json({ valid: false, error: "Internal server error" });
+    }
+  });
+
+  router.post("/validate-password", isAuthenticated, async (req, res) => {
+    const { password } = req.body;
+
+    const result = validatePassword(password);
+    return res.status(200).json(result);
   });
 
   return router;

@@ -241,9 +241,7 @@ function createMangaRoutes(db) {
       const recommendationResult = await db.query(
         `
             SELECT m.main_picture_medium, m.title, m.english_title, m.start_date, m.synopsis,
-            m.rank, m.mean, m.popularity, m.status, m.media_type, m.num_volumes, m.num_chapters,
-            rm.relation_type
-
+            m.rank, m.mean, m.popularity, m.status, m.media_type, m.num_volumes, m.num_chapters
             FROM manga m
             JOIN recommendation rec ON m.id = rec.recommendation_id
             WHERE rec.manga_id = $1`,

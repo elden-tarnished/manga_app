@@ -1,6 +1,7 @@
 import { Router } from "express";
 import argon2 from "argon2";
 import { argon2Options } from "../config/security.js";
+import { validatePassword, validateUsername } from "../utils/validation.js";
 
 function createAuthRoutes(db, passport) {
   const router = Router();
@@ -13,6 +14,13 @@ function createAuthRoutes(db, passport) {
           .status(400)
           .json({ success: false, error: "Please fill in all required fields." });
       }
+
+      // Validate username format
+      const usernameValidation = validateUsername(username);
+      if (!usernameValidation.valid) {
+        return res.status(400).json({ success: false, error: usernameValidation.error });
+      }
+
       const usernameExist = await db.query(
         "SELECT EXISTS (SELECT 1 FROM USERS WHERE username = $1) AS username_exists",
         [username],
@@ -34,35 +42,13 @@ function createAuthRoutes(db, passport) {
         });
       }
 
-      const lowerCasePattern = /(?=.*[a-z])/;
-      const upperCasePattern = /(?=.*[A-Z])/;
-      const digitPattern = /(?=.*\d)/;
-      const specialPattern = /(?=.*[!@#$%^&*()_+={};"'<>,./])/;
-      const lengthPattern = /^.{8,28}$/;
-      if (!lowerCasePattern.test(password)) {
+      // Validate password using shared utility
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.valid) {
         return res.status(400).json({
-          error: "Password must contain at least one lowercase letter (a-z).",
+          success: false,
+          error: passwordValidation.errors[0],
         });
-      }
-      if (!upperCasePattern.test(password)) {
-        return res.status(400).json({
-          error: "Password must contain at least one uppercase letter (A-Z).",
-        });
-      }
-      if (!digitPattern.test(password)) {
-        return res
-          .status(400)
-          .json({ error: "Password must contain at least one number (0-9)." });
-      }
-      if (!specialPattern.test(password)) {
-        return res.status(400).json({
-          error: "Password must contain at least one special character (!@#$%^&*).",
-        });
-      }
-      if (!lengthPattern.test(password)) {
-        return res
-          .status(400)
-          .json({ error: "Password must be between 8 and 28 characters long." });
       }
 
       const hashedPassword = await argon2.hash(password, argon2Options);
