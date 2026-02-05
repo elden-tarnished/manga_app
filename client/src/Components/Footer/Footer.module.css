@@ -1,4 +1,8 @@
 .footerAndYear {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  overflow: hidden;
   width: 100vw;
   background-color: #8D493A;
   color: white;

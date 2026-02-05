@@ -74,7 +74,7 @@ export function UserMenu({ onLogout }) {
   }, { dependencies: [showChangeInfo] });
 
   const handleFavorites = () => {
-    console.log('Navigate to favorites');
+    navigate('/favorite');
   };
 
   const handleBackToManga = () => {
@@ -150,7 +150,6 @@ export function UserMenu({ onLogout }) {
       })
         .to(itemChar, {
           y: "var(--buttonHeight)",
-          y: "100px",
           stagger: 0.02,
           duration: 0.5,
           ease: "power2.inOut",

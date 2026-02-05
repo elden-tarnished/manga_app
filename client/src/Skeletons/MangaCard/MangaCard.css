@@ -5,6 +5,21 @@
 
   position: relative;
   flex-shrink: 0;
+
+  /* Shimmer Effect */
+  background: linear-gradient(125deg, #F0E4D3 30%, #DCC5B2 50%, #F0E4D3 70%);
+  background-size: 300% 100%;
+  animation: shimmer 2.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 300% 0;
+  }
+
+  100% {
+    background-position: 0% 0;
+  }
 }
 
 .title--skel {

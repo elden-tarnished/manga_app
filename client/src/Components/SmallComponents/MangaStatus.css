@@ -74,24 +74,20 @@
 
 .Completed {
   background-color: #546e7a;
-  background: linear-gradient(145deg, #00000000 1%, #324a56 99%);
   color: white;
 }
 
 .Publishing {
   background-color: #499141;
-  background: linear-gradient(135deg, #00000000, #45a43b);
   color: white;
 }
 
 .On_hiatus {
   background-color: #f8c93a;
-  background: linear-gradient(135deg, #00000000, #f8c93a);
   color: #212529;
 }
 
 .Canceled {
   background-color: #C62828;
-  background: linear-gradient(135deg, #00000000, #C62828);
   color: white;
 }

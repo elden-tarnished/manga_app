@@ -16,7 +16,9 @@ function createUserRoutes(db) {
         [userId],
       );
       const user = userIdResult.rows[0];
-      return res.status(200).json({ email: user.email, username: user.username });
+      return res
+        .status(200)
+        .json({ email: user.email, username: user.username });
     } catch (err) {
       console.error("Error getting user ID: ", err);
       return res.status(500).json({ error: "Internal server error." });
@@ -82,7 +84,9 @@ function createUserRoutes(db) {
         );
 
         if (emailCheckResult.rows.length > 0) {
-          return res.status(400).json({ error: "email already used try again." });
+          return res
+            .status(400)
+            .json({ error: "email already used try again." });
         }
 
         updateStatements.push(() =>
@@ -119,7 +123,10 @@ function createUserRoutes(db) {
             .json({ error: "Password can NOT be same as the last password" });
         }
 
-        const hashedPassword = await argon2.hash(newPlainTextPass, argon2Options);
+        const hashedPassword = await argon2.hash(
+          newPlainTextPass,
+          argon2Options,
+        );
         updateStatements.push(() =>
           db.query("UPDATE users SET password = $1 WHERE id = $2", [
             hashedPassword,
@@ -163,7 +170,7 @@ function createUserRoutes(db) {
     try {
       const { rows } = await db.query(
         `
-            SELECT m.id, main_picture_medium, title, english_title, start_date, synopsis, rank, mean, popularity, status, media_type, num_volumes, num_chapters 
+            SELECT m.id, main_picture_large, title, english_title, start_date, synopsis, rank, mean, popularity, status, media_type, num_volumes, num_chapters 
             FROM manga m JOIN users_favorites uf ON m.id = uf.manga_id WHERE uf.user_id = $1`,
         [req.user.id],
       );
@@ -181,26 +188,42 @@ function createUserRoutes(db) {
     // Use shared validation
     const usernameValidation = validateUsername(username);
     if (!usernameValidation.valid) {
-      return res.status(200).json({ valid: false, error: usernameValidation.error });
+      return res
+        .status(200)
+        .json({ valid: false, error: usernameValidation.error });
     }
 
     try {
       // Check if it's the current user's username
-      const currentUserResult = await db.query("SELECT username FROM users WHERE id = $1", [userId]);
+      const currentUserResult = await db.query(
+        "SELECT username FROM users WHERE id = $1",
+        [userId],
+      );
       if (currentUserResult.rows[0].username === username) {
-        return res.status(200).json({ valid: true, available: false, reason: "same_as_current" });
+        return res
+          .status(200)
+          .json({ valid: true, available: false, reason: "same_as_current" });
       }
 
       // Check if taken by others
-      const checkResult = await db.query("SELECT 1 FROM users WHERE username = $1", [username]);
+      const checkResult = await db.query(
+        "SELECT 1 FROM users WHERE username = $1",
+        [username],
+      );
       if (checkResult.rows.length > 0) {
-        return res.status(200).json({ valid: false, available: false, error: "Username is already taken" });
+        return res.status(200).json({
+          valid: false,
+          available: false,
+          error: "Username is already taken",
+        });
       }
 
       return res.status(200).json({ valid: true, available: true });
     } catch (err) {
       console.error("Error checking username:", err);
-      return res.status(500).json({ valid: false, error: "Internal server error" });
+      return res
+        .status(500)
+        .json({ valid: false, error: "Internal server error" });
     }
   });
 

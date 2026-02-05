@@ -1,7 +1,7 @@
 import styles from './Filter.module.css';
-import {useRef} from "react";
+import { useRef } from "react";
 import gsap from "gsap";
-import {useGSAP} from "@gsap/react";
+import { useGSAP } from "@gsap/react";
 
 export function FilterSkel() {
 
@@ -11,11 +11,11 @@ export function FilterSkel() {
   useGSAP(() => {
     const tl = gsap.timeline()
       .to([ref1.current, ref2.current, ref3.current], {
-      backgroundPositionX: '0%',
-      duration: 1.5,
-      ease: 'none',
-      repeat: -1,
-    })
+        backgroundPositionX: '0%',
+        duration: 1.5,
+        ease: 'none',
+        repeat: -1,
+      })
     tl.play();
   })
   return (

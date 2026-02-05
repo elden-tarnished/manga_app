@@ -6,50 +6,61 @@ import styles from './Signup.module.css';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import SplitText from 'gsap/SplitText';
+import { usePasswordValidation } from '../../../hooks/useValidation.js';
 
 export default function Signup() {
   const navigate = useNavigate();
 
   const URL = 'http://localhost:3000';
-  const errorRef = useRef(null)
+  const errorRef = useRef(null);
 
-  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Use shared password validation hook
+  const passwordValidation = usePasswordValidation();
+
   useGSAP(() => {
-    if (!errorRef.current || !error) return
-    const chars = SplitText.create(errorRef.current, { type: 'chars' }).chars
+    if (!errorRef.current || !error) return;
+    const chars = SplitText.create(errorRef.current, { type: 'chars' }).chars;
     gsap.from(chars, {
       opacity: 0,
       scale: 0,
       stagger: 0.01,
       duration: 0.2
-    })
-  }, { dependencies: [error] })
+    });
+  }, { dependencies: [error] });
 
   async function signupUser(e) {
     e.preventDefault();
     setError('');
 
+    // Check password validation before submitting
+    if (passwordValidation.errors.length > 0) {
+      setError(passwordValidation.errors[0]);
+      return;
+    }
+
+    if (!passwordValidation.password) {
+      setError('Password is required');
+      return;
+    }
+
     try {
       setLoading(true);
 
-      // Backend currently expects: { username, password, email }
       const res = await axios.post(
         `${URL}/user/signup`,
-        { username, password, email },
+        { username, password: passwordValidation.password, email },
         { withCredentials: true },
       );
 
       console.log('Signup success:', res.data);
-      setName('');
       setUsername('');
       setEmail('');
-      setPassword('');
+      passwordValidation.reset();
 
       navigate('/login');
     } catch (err) {
@@ -107,10 +118,15 @@ export default function Signup() {
               name="password"
               autoComplete="new-password"
               placeholder="Your Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={passwordValidation.password}
+              onChange={(e) => passwordValidation.validatePassword(e.target.value)}
             />
           </label>
+          {passwordValidation.errors.length > 0 && (
+            <p className={sharedStyles.error} style={{ marginTop: '-8px' }}>
+              {passwordValidation.errors[0]}
+            </p>
+          )}
 
           <p className={sharedStyles.error} ref={errorRef}>{error}</p>
 

@@ -1,13 +1,16 @@
-/* ⚠️ ISSUE: justify-content: start should be flex-start
-   WHY: 'start' is a newer CSS value, 'flex-start' has better browser support
-   COMPATIBILITY: Use flex-start for broader compatibility
-   NOTE: 'start' works in modern browsers but flex-start is more standard */
+* {
+  margin: 0;
+}
+
 .main-page {
   display: flex;
   flex-direction: column;
   justify-content: start;
   align-items: center;
   font-family: 'DM Sans', sans-serif;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 :root {
@@ -21,4 +24,34 @@
   --shadow-1: 0 0 8px rgba(0, 0, 0, 0.35);
   --radius-pill: 999px;
   --radius-card: 16px;
+}
+
+:root {
+  /* ---------------- POWER 1 (soft) ---------------- */
+
+  --ease-power1-in: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  --ease-power1-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-power1-in-out: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+
+  /* ---------------- POWER 2 (medium) ---------------- */
+
+  --ease-power2-in: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  --ease-power2-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-power2-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+
+  /* ---------------- POWER 3 (strong) ---------------- */
+
+  --ease-power3-in: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-power3-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-power3-in-out: cubic-bezier(0.83, 0, 0.17, 1);
+  /* ---------------- BACK (overshoot) ---------------- */
+
+  --ease-back-out: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-back-in: cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  --ease-back-in-out: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+  /* ---------------- SNAP / CLICK ---------------- */
+
+  --ease-snap: cubic-bezier(.2, .9, .3, 1);
+  --ease-snap-hard: cubic-bezier(.1, 1, .1, 1);
 }

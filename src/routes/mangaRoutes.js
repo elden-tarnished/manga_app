@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { isAuthenticated, createValidateMangaId } from "../middleware/auth.js";
 import { validateQuery } from "../middleware/validateQuery.js";
-import { buildSortOption, sortMangaByFilters } from "../services/mangaService.js";
+import {
+  buildSortOption,
+  sortMangaByFilters,
+} from "../services/mangaService.js";
 
 function createMangaRoutes(db) {
   const router = Router();
@@ -55,47 +58,52 @@ function createMangaRoutes(db) {
     }
   });
 
-  router.post("/user/favorites/:mangaId", isAuthenticated, validateMangaId, async (req, res) => {
-    const mangaId = req.mangaId;
-    const userId = req.user.id;
+  router.post(
+    "/user/favorites/:mangaId",
+    isAuthenticated,
+    validateMangaId,
+    async (req, res) => {
+      const mangaId = req.mangaId;
+      const userId = req.user.id;
 
-    try {
-      const favoriteExists = await db.query(
-        "SELECT 1 FROM users_favorites WHERE user_id=$1 AND manga_id=$2",
-        [userId, mangaId],
-      );
-      if (favoriteExists.rows.length > 0) {
-        return res
-          .status(200)
-          .json({ message: "Manga already exists in your favorites" });
-      }
+      try {
+        const favoriteExists = await db.query(
+          "SELECT 1 FROM users_favorites WHERE user_id=$1 AND manga_id=$2",
+          [userId, mangaId],
+        );
+        if (favoriteExists.rows.length > 0) {
+          return res
+            .status(200)
+            .json({ message: "Manga already exists in your favorites" });
+        }
 
-      const result = await db.query(
-        `
+        const result = await db.query(
+          `
         WITH inserted AS 
         (INSERT INTO users_favorites (manga_id, user_id) VALUES ($1, $2) 
         ON CONFLICT (user_id, manga_id) DO NOTHING RETURNING manga_id) 
         SELECT title FROM manga 
         INNER JOIN  inserted on manga.id=inserted.manga_id`,
-        [mangaId, userId],
-      );
+          [mangaId, userId],
+        );
 
-      if (result.rows.length === 0) {
+        if (result.rows.length === 0) {
+          return res
+            .status(500)
+            .json({ message: `Failed to favorite the manga.` });
+        }
         return res
-          .status(500)
-          .json({ message: `Failed to favorite the manga.` });
+          .status(200)
+          .json({ message: `${result.rows[0].title} added to your favorites` });
+      } catch (err) {
+        console.error(
+          `Error favoriting the manga id:${mangaId}, user:${userId}`,
+          err,
+        );
+        return res.status(500).json({ error: "Internal server error" });
       }
-      return res
-        .status(200)
-        .json({ message: `${result.rows[0].title} added to your favorites` });
-    } catch (err) {
-      console.error(
-        `Error favoriting the manga id:${mangaId}, user:${userId}`,
-        err,
-      );
-      return res.status(500).json({ error: "Internal server error" });
-    }
-  });
+    },
+  );
 
   router.delete(
     "/user/favorites/:mangaId",
@@ -135,7 +143,6 @@ function createMangaRoutes(db) {
       const mangaResult = await db.query(
         `
             SELECT 
-            m.main_picture_medium AS mainPictureMedium,
             m.main_picture_large AS mainPictureLarge,
             m.title AS title,
             m.english_title AS englishTitle,
@@ -159,61 +166,73 @@ function createMangaRoutes(db) {
 
             string_agg(DISTINCT s.name, ', ') AS serialization,
  			string_agg(DISTINCT ms.synonym, ', ') AS synonym,
- 			string_agg(DISTINCT p.picture_medium, ', ') AS picturesMedium,
  			string_agg(DISTINCT p.picture_large, ', ') AS picturesLarge,
- 			json_agg(DISTINCT json_build_object('firstName', a.first_name, 'lastName', a.last_name, 'role', ma.role)) AS authors,
- 			json_agg(DISTINCT json_build_object('tag', g.name, 'type', g.type)) AS tags
+ 			json_agg(DISTINCT json_build_object('firstName', a.first_name, 'lastName', a.last_name, 'role', ma.role)::jsonb) AS authors,
+ 			json_agg(DISTINCT json_build_object('tag', g.name, 'type', g.type)::jsonb) AS tags
  			
             FROM manga AS m 
-            JOIN manga_serialization AS mas ON m.id = mas.manga_id 
-            JOIN serialization AS s         ON mas.serialization_id = s.id
-            JOIN manga_synonym AS ms        ON m.id = ms.manga_id
-            JOIN manga_genre AS mg          ON m.id = mg.manga_id 
-            JOIN genre AS g                 ON mg.genre_id = g.id
-            JOIN manga_picture AS mp        ON mp.manga_id = m.id 
-            JOIN picture AS p               ON mp.picture_id = p.id
-            JOIN manga_author AS ma         ON ma.manga_id = m.id 
-            JOIN author AS a                ON ma.author_id = a.id
+            LEFT JOIN manga_serialization AS mas ON m.id = mas.manga_id 
+            LEFT JOIN serialization AS s         ON mas.serialization_id = s.id
+            LEFT JOIN manga_synonym AS ms        ON m.id = ms.manga_id
+            LEFT JOIN manga_genre AS mg          ON m.id = mg.manga_id 
+            LEFT JOIN genre AS g                 ON mg.genre_id = g.id
+            LEFT JOIN manga_picture AS mp        ON mp.manga_id = m.id 
+            LEFT JOIN picture AS p               ON mp.picture_id = p.id
+            LEFT JOIN manga_author AS ma         ON ma.manga_id = m.id 
+            LEFT JOIN author AS a                ON ma.author_id = a.id
             WHERE m.id=$1
  			GROUP BY m.id `,
         [mangaId],
       );
 
       const row = mangaResult.rows[0];
+      if (!row) {
+        return res.status(404).json({ error: "Manga not found" });
+      }
+      const largePictures = (row.pictureslarge ?? "")
+        .split(",")
+        .map((url) => url.trim())
+        .filter(Boolean);
+      const mainBase = (row.mainpicturelarge ?? "").includes(".")
+        ? row.mainpicturelarge.substring(0, row.mainpicturelarge.lastIndexOf("."))
+        : row.mainpicturelarge;
       const manga = {
-        mainPictureMedium: row.mainPictureMedium,
-        mainPictureLarge: row.mainPictureLarge,
+        mainPictureLarge: row.mainpicturelarge,
         title: row.title,
-        englishTitle: row.englishTitle,
-        japaneseTitle: row.japaneseTitle,
-        startDate: row.startDate,
-        endDate: row.endDate,
+        englishTitle: row.englishtitle,
+        japaneseTitle: row.japanesetitle,
+        startDate: row.startdate,
+        endDate: row.enddate,
         synopsis: row.synopsis,
         mean: row.mean,
         rank: row.rank,
         popularity: row.popularity,
-        numListUsers: row.numListUsers,
-        numScoringUsers: row.NumScoringUsers,
+        numListUsers: row.numlistusers,
+        numScoringUsers: row.numscoringusers,
         status: row.status,
         nsfw: row.nsfw,
-        createdAt: row.createdAt,
-        updatedAt: row.UpdatedAt,
-        mediaType: row.mediaType,
-        numChapters: row.numChapters,
-        numVolumes: row.numVolumes,
+        createdAt: row.createdat,
+        updatedAt: row.updatedat,
+        mediaType: row.mediatype,
+        numChapters: row.numchapters,
+        numVolumes: row.numvolumes,
         background: row.background,
         serialization: row.serialization,
         synonym: row.synonym,
-        picturesMedium: row.picturesMedium,
-        picturesLarge: row.picturesLarge,
+        picturesLarge: largePictures.filter((url) => {
+          const urlBase = url.includes(".")
+            ? url.substring(0, url.lastIndexOf("."))
+            : url;
+          return urlBase !== mainBase;
+        }),
         authors: row.authors,
         tags: row.tags,
       };
 
       const relatedResult = await db.query(
         `
-            SELECT m.main_picture_medium, m.title, m.english_title, m.start_date, m.synopsis,
-            m.rank, m.mean, m.popularity, m.status, m.media_type, m.num_volumes, m.num_chapters,
+            SELECT m.id, m.main_picture_large, m.title, m.english_title, m.start_date,
+            m.mean , m.status, m.media_type,
             rm.relation_type
 
             FROM manga m 
@@ -223,24 +242,20 @@ function createMangaRoutes(db) {
       );
 
       const relatedManga = relatedResult.rows.map((row) => ({
-        mainPictureMedium: row.main_picture_medium,
+        id: row.id,
+        mainPictureLarge: row.main_picture_large,
         title: row.title,
         englishTitle: row.english_title,
         startDate: row.start_date,
-        synopsis: row.synopsis,
-        rank: row.rank,
         mean: row.mean,
-        popularity: row.popularity,
         status: row.status,
         mediaType: row.media_type,
-        numVolumes: row.num_volumes,
-        numChapters: row.num_chapters,
         relationType: row.relation_type,
       }));
 
       const recommendationResult = await db.query(
         `
-            SELECT m.main_picture_medium, m.title, m.english_title, m.start_date, m.synopsis,
+            SELECT m.id, m.main_picture_large, m.title, m.english_title, m.start_date, m.synopsis,
             m.rank, m.mean, m.popularity, m.status, m.media_type, m.num_volumes, m.num_chapters
             FROM manga m
             JOIN recommendation rec ON m.id = rec.recommendation_id
@@ -249,18 +264,14 @@ function createMangaRoutes(db) {
       );
 
       const recommendedManga = recommendationResult.rows.map((row) => ({
-        mainPictureMedium: row.main_picture_medium,
+        id: row.id,
+        mainPictureLarge: row.main_picture_large,
         title: row.title,
         englishTitle: row.english_title,
         startDate: row.start_date,
-        synopsis: row.synopsis,
-        rank: row.rank,
         mean: row.mean,
-        popularity: row.popularity,
         status: row.status,
         mediaType: row.media_type,
-        numVolumes: row.num_volumes,
-        numChapters: row.num_chapters,
         relationType: row.relation_type,
       }));
 
