@@ -1,0 +1,10 @@
+.overlay {
+  display: block; /* Managed by GSAP/React */
+  overflow: hidden;
+}
+
+.expandedImg {
+  display: block;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  will-change: transform, top, left, width, height;
+}

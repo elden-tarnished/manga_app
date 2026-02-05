@@ -1,0 +1,18 @@
+.svg_heart {
+  display: block;
+  margin: 0 auto;
+  flex-shrink: 0;
+  fill: #F0E4D3;
+  cursor: pointer;
+  transform-origin: center center;
+  line-height: 0;
+  transition: fill 0.3s ease;
+}
+
+.svg_heart.heart_active {
+  fill: #BA487F;
+}
+
+.lightning {
+  display: none;
+}

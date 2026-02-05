@@ -1,0 +1,106 @@
+/* Container for the image and overlay */
+.itemImageWrapper {
+  position: relative;
+  height: 280px;
+  min-width: 184px;
+  width: 184px;
+  border-radius: 5px;
+  overflow: hidden;
+  flex-shrink: 0;
+  /* Fallback background */
+  background: #F0E4D3;
+  cursor: pointer;
+}
+
+.itemImageWrapper .img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-color: transparent;
+  will-change: opacity;
+}
+
+.img {
+  opacity: 0;
+}
+
+/* Hover Effect for Info Overlay */
+.infoOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(141, 73, 58, 0.9);
+  /* #8D493A with opacity */
+  color: #F0E4D3;
+  padding: 5px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-sizing: border-box;
+  pointer-events: none;
+  /* Let clicks pass through if needed */
+}
+
+/* Trigger the slide-up on hover */
+.itemImageWrapper:hover .infoOverlay {
+  transform: translateY(0);
+}
+
+.infoOverlayTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+  /* Limit to 2 lines */
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.infoOverlayStats {
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  opacity: 0.9;
+}
+
+/* Shimmer Loading Animation */
+@keyframes shimmer {
+  0% {
+    background-position: 300% 0;
+  }
+
+  100% {
+    background-position: 0% 0;
+    /* Adjusted for smoother loop */
+  }
+}
+
+.loadingShimmer {
+  background: linear-gradient(125deg, #F0E4D3 30%, #DCC5B2 50%, #F0E4D3 70%);
+  background-size: 300% 100%;
+  animation: shimmer 2.5s infinite linear;
+}
+
+@media (max-width: 768px) {
+
+  .infoOverlay {}
+
+  .itemImageWrapper,
+  .img {
+    height: 224px;
+    min-width: 147px;
+    width: 147px;
+  }
+
+  .infoOverlay {
+    transform: translateY(0);
+    transition: none;
+  }
+}

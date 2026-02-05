@@ -3,14 +3,18 @@
   flex-direction: column;
   align-items: center;
   background-color: #DCC5B2;
-  max-width: 100vw;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 
 .manga__container {
+  box-sizing: border-box;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  width: 100vw;
   gap: 30px;
   justify-content: center;
   padding: 30px;

@@ -4,13 +4,15 @@ import styles from './SearchResult.module.css';
 import "../../../SmallComponents/MangaStatus.css"
 import { useRef } from 'react';
 import { gsap } from 'gsap';
+import { Heart } from '../../../SmallComponents/Button/Heart.jsx';
 
 export function SearchResult(props) {
-  const { title, main_image_medium, status, start_date = '', media_type } = props;
+  const { id, title, main_image_medium, status, start_date = '', media_type, favorites = false,
+    setCurrentId, setIsCurrentIdFromCard, setItemLoaded
+  } = props;
 
   const bgRef = useRef(null)
   const imgRef = useRef(null)
-  const loaderTlRef = useRef(null)
 
   const [imgLoading, setImgLoading] = useState(true)
 
@@ -58,7 +60,7 @@ export function SearchResult(props) {
         opacity: 1,
         duration: 0.3,
         ease: 'power1.out',
-        oncomplete: () => {
+        onComplete: () => {
           loaderTl.revert();
         }
       })
@@ -68,9 +70,15 @@ export function SearchResult(props) {
   const statusClass = statusMap[status] || 'NA';
   const CapitalizedMediaType = media_type ? media_type.charAt(0).toUpperCase() + media_type.slice(1) : '';
 
+  const onClick = () => {
+    setCurrentId?.(id)
+    setIsCurrentIdFromCard?.(true)
+    setItemLoaded?.(false)
+  };
+
 
   return (
-    <div className={styles.whole}>
+    <div className={styles.whole} onClick={onClick}>
 
       <div className={styles.img__wrapper} ref={bgRef}>
         <img className={styles.img} src={main_image_medium} ref={imgRef} alt={title} />
@@ -88,6 +96,13 @@ export function SearchResult(props) {
         <div className={styles.mediaContainer}>
           <h4 className={`${styles.mediaType} ${media_type}`}>{(CapitalizedMediaType === 'one_shot') ? CapitalizedMediaType.replace('_', '-') : CapitalizedMediaType.replace('_', ' ')}</h4>
           <h4 className={`${styles.status} ${statusClass}`}>{statusClass}</h4>
+        </div>
+        <div className={styles.heart__container} onClick={(e) => e.stopPropagation()}>
+          <Heart
+            mangaId={id}
+            initialActive={favorites}
+            width={24}
+          />
         </div>
       </div>
 

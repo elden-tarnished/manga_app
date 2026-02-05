@@ -2,6 +2,20 @@
   font-family: "Montserrat", sans-serif;
 }
 
+.heart__container {
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  margin-top: 5px;
+  display: grid;
+  place-items: center;
+  background-color: #DCC5B2;
+  border-radius: 5px;
+  box-sizing: border-box;
+  overflow: visible;
+  line-height: 0;
+  cursor: pointer;
+}
 
 .whole {
   display: flex;
@@ -10,6 +24,7 @@
   border-radius: 8px;
   background-color: #F0E4D3;
   min-width: 0;
+  cursor: pointer;
 }
 
 .details__container {

@@ -6,17 +6,20 @@ import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin"
 import { Observer } from "gsap/Observer";
-import { SplitText } from "gsap/SplitText";
+import { Heart } from "../../SmallComponents/Button/Heart.jsx";
 
-gsap.registerPlugin(useGSAP, ScrambleTextPlugin, Observer, SplitText)
+gsap.registerPlugin(useGSAP, ScrambleTextPlugin, Observer)
 export function MangaCard(props) {
   const {
+    id,
     main_picture_large, title,
     start_date = '', synopsis, mean,
     status, media_type, num_volumes,
-    color,
+    setCurrentId,
+    setIsCurrentIdFromCard,
+    setItemLoaded,
+    favorites = false
   } = props;
-  const { setImgLoaded } = props
 
   const isMobile = useIsMobile()
 
@@ -74,7 +77,7 @@ export function MangaCard(props) {
       img.addEventListener('load', handleImgLoad);
       return () => img.removeEventListener('load', handleImgLoad);
     }
-  }, [isMobile])
+  }, [imgLoading, isMobile, main_picture_large])
 
   useLayoutEffect(() => {
     const rect = cardRef.current.getBoundingClientRect()
@@ -84,26 +87,15 @@ export function MangaCard(props) {
   }, [isMobile]);
 
   useGSAP(() => {
-    const tl = gsap.timeline({ paused: true })
     if (bgRef.current === null) return;
-    if (!imgLoading) {
-      tl.to(bgRef.current, {
-        backgroundPositionX: '0%',
-        duration: 1.5,
-        ease: 'none',
-        repeat: -1,
-      })
-    }
 
-    if (imgLoading) {
-      tl.play()
-    } else {
+    if (!imgLoading) {
       gsap.to(imgRef.current, {
         opacity: 1,
         stagger: 0.04,
         duration: 0.5,
         ease: 'none',
-        oncomplete: () => {
+        onComplete: () => {
           console.log('image animation complete')
         }
       })
@@ -111,7 +103,7 @@ export function MangaCard(props) {
   }, { dependencies: [imgLoading], scope: cardRef });
 
 
-  useGSAP(() => {
+  const { contextSafe } = useGSAP(() => {
     if (imgLoading) return;
 
     const tlCard = gsap.timeline({ paused: true });
@@ -123,12 +115,10 @@ export function MangaCard(props) {
     const synopsisPadding = parseFloat(synopsisStyle.getPropertyValue('padding'));
     const synopsisWidthAA = synopsisWidth + (2 * synopsisPadding);
 
-    const chars = SplitText.create(titleRef.current, { type: "chars" }).chars
     tlCard
-      .to(detailAndSynopsisRef.current,
+      .set(detailAndSynopsisRef.current,
         {
           pointerEvents: 'all',
-          duration: 0.1
         })
       .to(detailRef.current,
         {
@@ -143,16 +133,10 @@ export function MangaCard(props) {
       .to(titleRef.current, {
         backgroundColor: 'transparent',
         pointerEvents: 'none',
-        duration: 0.5,
-        scale: 0.7,
-      }, 0)
-      .to(chars, {
-        scale: 0.4,
         opacity: 0,
-        color: 'black',
-        rotateX: 90,
-        stagger: 0.05,
-        duration: 0.4
+        duration: 0.3,
+        x: 20,
+        ease: 'power2.inOut'
       }, 0)
 
     const tlYoyo = gsap.timeline({ paused: true }).fromTo('.svg', {
@@ -323,6 +307,16 @@ export function MangaCard(props) {
 
   const statusClass = STATUS_MAP[status] || 'NA';
   const CapitalizedMediaType = media_type ? media_type.charAt(0).toUpperCase() + media_type.slice(1) : '';
+  const onClick = contextSafe(() => {
+    console.log('Card clicked:', id);
+    setCurrentId(id)
+    setIsCurrentIdFromCard(true)
+    setItemLoaded(false)
+  });
+
+
+
+
   return (
     <>
       <div className={`whole ${isRight ? "right" : "left"}`}
@@ -330,15 +324,19 @@ export function MangaCard(props) {
       >
         <div ref={overlay} className="overlay"></div>
         <div
-          className="card"
+          className={`card ${imgLoading ? "loadingShimmer" : ""}`}
           draggable='false'
-          style={{
-            background: `linear-gradient(135deg, ${color[0]} 30%, ${color[1]} 50%, ${color[0]} 70%) 100% 0`,
-            backgroundPosition: '100% 0',
-            backgroundSize: '600% 100%'
-          }}
           ref={bgRef}>
-          <img ref={imgRef} className="img" src={main_picture_large} alt={title} draggable='false' />
+          <div className="heart_container">
+            <Heart
+              mangaId={id}
+              initialActive={favorites}
+              width={27}
+            />
+          </div>
+          <img
+            onClick={onClick}
+            ref={imgRef} className="img" src={main_picture_large} alt={title} draggable='false' />
           <h4 className="title center-text" ref={titleRef}>{title}</h4>
         </div>
         <div className={`detail-and-synopsis__container ${isRight ? "rightC" : "leftC"}`} ref={detailAndSynopsisRef}>

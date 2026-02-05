@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Header } from '../Header/Header.jsx';
 import axios from 'axios';
 import { MangaCard } from './MangaCard/MangaCard.jsx';
 import { MangaCardSkel } from '../../Skeletons/MangaCard/MangaCard.jsx'
@@ -8,11 +9,24 @@ import { FilterContext } from "../SmallComponents/FilterContext.js";
 import { FilterSkel } from "../../Skeletons/Filter/Filter.jsx";
 import { gsap } from 'gsap';
 import { Observer } from "gsap/Observer"
+import { Flip } from "gsap/Flip";
+import ItemLoading from './OnClick/ItemLoading.jsx'
+import Item from './OnClick/Item.jsx'
 import './MangaContainer.css'
+
+
+const URL = "http://localhost:3000"
+const toFavoriteFlag = (value) => value === true || value === "t" || value === 1 || value === "1";
+const parsePageFromQuery = () => {
+  if (typeof window === 'undefined') return 1;
+  const rawPage = new URLSearchParams(window.location.search).get('page');
+  const parsedPage = Number.parseInt(rawPage ?? '1', 10);
+  return Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
+};
 
 export function MangaContainer() {
 
-  gsap.registerPlugin(Observer);
+  gsap.registerPlugin(Observer, Flip);
   const mangaContainerRef = useRef(null);
   // const [mangaContainerWidth, setMangaContainerWidth] = useState(null)
 
@@ -32,29 +46,49 @@ export function MangaContainer() {
   const [limit, setLimit] = useState('60');
   const [direction, setDirection] = useState(null);
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(parsePageFromQuery);
 
+  const [itemData, setItemData] = useState(null)
+  const [itemLoaded, setItemLoaded] = useState(false)
 
+  const [currentId, setCurrentId] = useState(-1);
+  const [isCurrentIdFromCard, setIsCurrentIdFromCard] = useState(true);
 
-  function randomColors(pageAmount, colors, opacity) {
-    return Array.from({ length: pageAmount }, () => {
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const rgba = hexToRgba(color, opacity);
-      return [color, rgba]
-    })
-  }
-  function hexToRgba(hexColor, opacity) {
-    let hex = hexColor.replace('#', '')
-    if (hexColor.length < 4) {
-      hex = hexColor.split('').map(char => char + char).join('');
+  // New State for shared element transitions
+  const [imgUrl, setImgUrl] = useState(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const currentPage = Number.parseInt(params.get('page') ?? '1', 10);
+    if (currentPage === page) return;
+    params.set('page', String(page));
+    const query = params.toString();
+    const nextUrl = `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`;
+    window.history.replaceState(null, '', nextUrl);
+  }, [page]);
+
+  useEffect(() => {
+    if (currentId === -1) return;
+    const fetchDataById = async () => {
+
+      try {
+        const result = await axios.get(URL + `/manga/${currentId}`, { withCredentials: true })
+        setItemData(result.data)
+        setItemLoaded(true)
+        setImgUrl(result.data.manga.main_picture_large)
+      }
+      catch (err) {
+        console.log('Error fetching data by ID:', err);
+        // Reset state on error to prevent being stuck in loading
+        setCurrentId(-1);
+        //alert("Failed to load manga details.");
+      }
     }
 
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
+    fetchDataById()
+  }, [currentId])
 
-    return `rgba(${r},${g},${b}, ${opacity})`;
-  }
   //
   // useGSAP(() => {
   //   Observer.create({
@@ -77,31 +111,6 @@ export function MangaContainer() {
   //     }
   //   })
   // }, {}) // it have a initial stutter at wheeling for some reason everytime u have to first stutter at when the stuttering triggers and then smooth till the next wheeling
-  const colors = [
-    "#FF6B6B",
-    "#4ECDC4",
-    "#45B7D1",
-    "#FED766",
-    "#8A2BE2",
-    "#FF8C00",
-    "#20B2AA",
-    "#9370DB",
-    "#F08080",
-    "#3CB371",
-    "#FFA07A",
-    "#BA55D3",
-    "#6A5ACD",
-    "#FFD700",
-    "#7B68EE",
-    "#00FA9A",
-    "#FF69B4",
-    "#1E90FF",
-    "#F7786B",
-    "#7FFFD4"
-  ];
-  const randomColorsMemo = useMemo(() => {
-    return randomColors(80, colors, 0.7)
-  }, [page]);
 
   const filter = useMemo(() => ({
     genre,
@@ -142,7 +151,8 @@ export function MangaContainer() {
     async function fetchData() {
       setLoading(true);
       try {
-        const result = await axios.get('http://localhost:3000/manga', {
+        const result = await axios.get(URL + '/manga', {
+          withCredentials: true,
           params: {
             genre,
             theme,
@@ -160,6 +170,9 @@ export function MangaContainer() {
 
         setData(result.data);
         setMangas(mangaItem);
+        if (result.data.pageNum && result.data.pageNum !== page) {
+          setPage(result.data.pageNum);
+        }
       } catch (err) {
         console.log('eRRor', err);
       } finally {
@@ -181,19 +194,48 @@ export function MangaContainer() {
     limit,
     direction]);
 
+  const showSkeleton = loading && mangas.length === 0;
+
   return (<div className='body'>
+    <Header />
+
     <FilterContext value={filter}>
       {staticLoading ?
         <FilterSkel />
         :
         <Filter FilterOptions={data.sortOption} />
       }
+      <ItemLoading
+        currentId={currentId}
+        itemLoaded={itemLoaded}
+        isCurrentIdFromCard={isCurrentIdFromCard}
+      />
+      {
+        itemData &&
+        <Item
+          currentId={currentId}
+          itemLoaded={itemLoaded}
+          setItemLoaded={setItemLoaded}
+          setInnerCardId={setCurrentId}
+          manga={itemData.manga}
+          relatedManga={itemData?.relatedManga}
+          recommendedManga={itemData?.recommendedManga}
+          imgUrl={imgUrl}
+          setImgUrl={setImgUrl}
+          setIsCurrentIdFromCard={setIsCurrentIdFromCard}
+          isCurrentIdFromCard={isCurrentIdFromCard}
+        />
+      }
       <div className='manga__container' ref={mangaContainerRef}>
-        {loading ? Array.from({ length: parseInt(limit, 10) }, (_, i) => <MangaCardSkel key={i} color={randomColorsMemo[i]} />) :
-          mangas.map((e, i) =>
+        {showSkeleton ? Array.from({ length: parseInt(limit, 10) }, (_, i) => <MangaCardSkel key={i} />) :
+          mangas.map((e) =>
             <MangaCard
-              color={randomColorsMemo[i]}
+              setItemLoaded={setItemLoaded}
+              setIsCurrentIdFromCard={setIsCurrentIdFromCard}
+              isCurrentIdFromCard={isCurrentIdFromCard}
+              setCurrentId={setCurrentId}
               key={e.id}
+              id={e.id}
               main_picture_large={e.main_picture_large}
               title={e.title}
               english_title={e.english_title}
@@ -205,6 +247,7 @@ export function MangaContainer() {
               start_date={e.start_date}
               status={e.status}
               synopsis={e.synopsis}
+              favorites={toFavoriteFlag(e.favorites)}
             />
           )}
       </div>
