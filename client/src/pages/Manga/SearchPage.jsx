@@ -1,20 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import axios from "axios";
-import { Header } from "../../Components/Header/Header.jsx";
-import { MangaCard } from "../../Components/Manga/MangaCard/MangaCard.jsx";
+import { Header } from "../../components/Header/Header.jsx";
+import { MangaCard } from "../../components/Manga/MangaCard/MangaCard.jsx";
 import { MangaCardSkel } from "../../Skeletons/MangaCard/MangaCard.jsx";
-import { Pagination } from "../../Components/Manga/Pagination/Pagination.jsx";
-import { FilterContext } from "../../Components/SmallComponents/FilterContext.js";
-import ItemLoading from "../../Components/Manga/OnClick/ItemLoading.jsx";
-import Item from "../../Components/Manga/OnClick/Item.jsx";
-import "../../Components/Manga/MangaContainer.css";
+import { Pagination } from "../../components/Manga/Pagination/Pagination.jsx";
+import { FilterContext } from "../../components/SmallComponents/FilterContext.js";
+import ItemLoading from "../../components/Manga/OnClick/ItemLoading.jsx";
+import Item from "../../components/Manga/OnClick/Item.jsx";
+import { useAppError } from "../../Context/AppErrorContext.jsx";
+import "../../components/Manga/MangaContainer.css";
 
 const URL = "http://localhost:3000";
 const PAGE_SIZE = 24;
 const toFavoriteFlag = (value) => value === true || value === "t" || value === 1 || value === "1";
 
 export function SearchPage() {
+  const { setGlobalError } = useAppError();
   const [searchParams, setSearchParams] = useSearchParams();
   const query = (searchParams.get("q") ?? "").trim();
   const pageFromQuery = Number.parseInt(searchParams.get("page") ?? "1", 10);
@@ -77,9 +79,11 @@ export function SearchPage() {
         }
       } catch (err) {
         if (!isMounted) return;
+        const message = err?.response?.data?.error ?? "Failed to fetch search results.";
         setResults([]);
         setMaxPageNum(1);
-        setError(err?.response?.data?.error ?? "Failed to fetch search results.");
+        setError(message);
+        setGlobalError(message);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -89,7 +93,7 @@ export function SearchPage() {
     return () => {
       isMounted = false;
     };
-  }, [query, page, setPage]);
+  }, [query, page, setPage, setGlobalError]);
 
   useEffect(() => {
     if (currentId === -1) return;
@@ -103,8 +107,9 @@ export function SearchPage() {
         setItemData(result.data);
         setItemLoaded(true);
         setImgUrl(result.data?.manga?.main_picture_large ?? null);
-      } catch {
+      } catch (err) {
         if (!isMounted) return;
+        setGlobalError(err?.response?.data?.error ?? "Failed to load manga details.");
         setCurrentId(-1);
       }
     };
@@ -112,7 +117,7 @@ export function SearchPage() {
     return () => {
       isMounted = false;
     };
-  }, [currentId]);
+  }, [currentId, setGlobalError]);
 
   useEffect(() => {
     if (query || page === 1) return;
@@ -163,26 +168,26 @@ export function SearchPage() {
           {loading
             ? Array.from({ length: PAGE_SIZE }, (_, i) => <MangaCardSkel key={i} />)
             : results.map((manga) => (
-                <MangaCard
-                  key={manga.id}
-                  id={manga.id}
-                  main_picture_large={manga.main_picture_large}
-                  title={manga.title}
-                  english_title={manga.english_title}
-                  mean={manga.mean}
-                  media_type={manga.media_type}
-                  num_volumes={manga.num_volumes}
-                  popularity={manga.popularity}
-                  rank={manga.rank}
-                  start_date={manga.start_date}
-                  status={manga.status}
-                  synopsis={manga.synopsis}
-                  favorites={toFavoriteFlag(manga.favorites)}
-                  setCurrentId={setCurrentId}
-                  setIsCurrentIdFromCard={setIsCurrentIdFromCard}
-                  setItemLoaded={setItemLoaded}
-                />
-              ))}
+              <MangaCard
+                key={manga.id}
+                id={manga.id}
+                main_picture_large={manga.main_picture_large}
+                title={manga.title}
+                english_title={manga.english_title}
+                mean={manga.mean}
+                media_type={manga.media_type}
+                num_volumes={manga.num_volumes}
+                popularity={manga.popularity}
+                rank={manga.rank}
+                start_date={manga.start_date}
+                status={manga.status}
+                synopsis={manga.synopsis}
+                favorites={toFavoriteFlag(manga.favorites)}
+                setCurrentId={setCurrentId}
+                setIsCurrentIdFromCard={setIsCurrentIdFromCard}
+                setItemLoaded={setItemLoaded}
+              />
+            ))}
           {!loading && results.length === 0 && (
             <h2 style={{ padding: "20px 0" }}>{error || "No results found."}</h2>
           )}

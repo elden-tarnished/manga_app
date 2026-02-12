@@ -1,0 +1,101 @@
+* {
+  font-family: "Montserrat", sans-serif;
+}
+
+.heart__container {
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  margin-top: 5px;
+  display: grid;
+  place-items: center;
+  background-color: #DCC5B2;
+  border-radius: 5px;
+  box-sizing: border-box;
+  overflow: visible;
+  line-height: 0;
+  cursor: pointer;
+}
+
+.whole {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  border-radius: 8px;
+  background-color: #F0E4D3;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.details__container {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+}
+
+.title__container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  overflow: hidden;
+  flex-grow: 0;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 500;
+
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  flex-shrink: 1;
+
+}
+
+.year {
+  margin-left: 5px;
+  font-size: 18px;
+  font-weight: 400;
+  margin-right: 5px;
+}
+
+.titleMask__wrapper {
+  display: none;
+}
+
+.mediaContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.mediaType,
+.status {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.img__wrapper {
+  height: 90px;
+  min-width: 55px;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 4px 0 4px 4px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #F0E4D3 30%, #DCC5B2 50%, #F0E4D3 70%) 100% 0;
+  background-size: 600% 100%;
+}
+
+.img {
+  font-size: 0;
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-color: transparent;
+  will-change: opacity;
+}

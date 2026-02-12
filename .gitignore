@@ -2,7 +2,7 @@
 docs/
 .idea/
 .vscode/
-
+.github/
 # Logs
 logs/
 *.log

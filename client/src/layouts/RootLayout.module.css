@@ -9,3 +9,35 @@
 .main {
   flex: 1;
 }
+
+.globalError {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12000;
+  width: min(90vw, 580px);
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffefe7;
+  color: #5a2712;
+  border-radius: 16px;
+  padding: 5px 10px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+}
+
+.globalErrorText {
+  margin: 0;
+}
+
+.globalErrorClose {
+  border: 1px solid #5a2712;
+  color: #5a2712;
+  background: transparent;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}

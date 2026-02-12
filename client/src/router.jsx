@@ -1,10 +1,10 @@
 import { createBrowserRouter } from 'react-router';
 import { RootLayout } from './layouts/RootLayout.jsx';
-import { MangaContainer } from './Components/Manga/MangaContainer.jsx';
+import { MangaContainer } from './components/Manga/MangaContainer.jsx';
 import LoginAuthentication from './pages/Login/Authentication.jsx';
 import SignupAuthentication from './pages/Signup/Authentication.jsx';
 import { NotFound } from './pages/NotFound/NotFound.jsx';
-import {UserMenu} from './Components/UserMenu/UserMenu.jsx';
+import {UserMenu} from './components/UserMenu/UserMenu.jsx';
 import { FavoritePage } from './pages/Manga/FavoritePage.jsx';
 import { SearchPage } from './pages/Manga/SearchPage.jsx';
 

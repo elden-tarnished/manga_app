@@ -1,0 +1,45 @@
+.btn {
+  border-radius: 5px;
+  border: 1px solid #000;
+  font-size: 20px;
+  align-self: center;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 37px;
+}
+
+.still {
+  background-color: black;
+  color: #FAF7F3;
+}
+
+.container {
+  margin: 10px 0 10px 0;
+  min-width: 300px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #FAF7F3;
+}
+
+
+@media (max-width: 768px) {
+  .filler {
+    display: none;
+  }
+
+  .btn {
+    font-size: 16px;
+    min-width: 30px;
+    min-height: 30px;
+  }
+
+  .container {
+    gap: 4px;
+  }
+}

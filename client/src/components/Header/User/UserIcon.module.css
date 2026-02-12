@@ -1,0 +1,112 @@
+.user__container {
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  background-color: #F0E4D3;
+  border-radius: 50%;
+  top: -28px;
+  left: -8vw;
+  z-index: 10;
+  flex-direction: column;
+  gap: 1px;
+  width: 50px;
+  height: 50px;
+}
+
+.click {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  z-index: 12;
+  cursor: pointer;
+}
+
+.background {
+  pointer-events: none;
+  position: absolute;
+  width: 120px;
+  height: 100px;
+  top: 55px;
+  background-color: #F0E4D340;
+  z-index: -1;
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+
+}
+
+.layout {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.rects {
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  width: 0;
+}
+
+.circle {
+  width: 10px;
+  height: 10px;
+  background-color: black;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.rect {
+  width: 100px;
+  height: 30px;
+  background-color: black;
+  color: black;
+  border: 0;
+  z-index: 11;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  cursor: pointer;
+}
+
+.rect0 {
+  border-radius: 20px 20px 0 0;
+}
+
+.rect2 {
+  border-radius: 0 0 20px 20px;
+}
+
+.hoverBridge {
+  position: absolute;
+  width: 120px;
+  height: 30px;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+@media (max-width: 768px) {
+  .user__container {
+    left: -10px;
+  }
+
+  .background {
+    top: 60px;
+    width: 110px;
+    height: 90px;
+    border-radius: 16px;
+  }
+
+  .background {
+    right: -5px;
+  }
+}

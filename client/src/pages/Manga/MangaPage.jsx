@@ -1,8 +1,8 @@
-import { MangaContainer } from '../../Components/Manga/MangaContainer.jsx'
-import { Header } from '../../Components/Header/Header.jsx'
+import { MangaContainer } from '../../components/Manga/MangaContainer.jsx'
+import { Header } from '../../components/Header/Header.jsx'
 import styles from './MangaPage.module.css'
-import { IsMobileProvider } from '../../Components/SmallComponents/IsMobileProvider.jsx'
-import { Footer } from '../../Components/Footer/Footer.jsx'
+import { IsMobileProvider } from '../../components/SmallComponents/IsMobileProvider.jsx'
+import { Footer } from '../../components/Footer/Footer.jsx'
 export function MangaPage() {
   return (
     <IsMobileProvider brealpoint={768}>

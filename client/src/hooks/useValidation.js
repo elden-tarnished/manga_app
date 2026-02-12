@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import axios from 'axios';
+import { useAppError } from '../Context/AppErrorContext.jsx';
 
 const API_URL = 'http://localhost:3000';
 
@@ -8,6 +9,7 @@ const API_URL = 'http://localhost:3000';
  * Used by both Signup and ChangeInfo components
  */
 export function usePasswordValidation() {
+    const { setGlobalError } = useAppError();
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState([]);
@@ -34,10 +36,10 @@ export function usePasswordValidation() {
                     setErrors(data.errors || []);
                 }
             } catch {
-                // Silent fail for validation
+                setGlobalError('Password validation is unavailable right now.');
             }
         }, 300);
-    }, []);
+    }, [setGlobalError]);
 
     const reset = useCallback(() => {
         setPassword('');
@@ -73,6 +75,7 @@ export function usePasswordValidation() {
  * @param {boolean} requireAuth - Whether the API requires authentication
  */
 export function useUsernameValidation(currentUsername = null, requireAuth = true) {
+    const { setGlobalError } = useAppError();
     const [username, setUsername] = useState('');
     const [status, setStatus] = useState('idle'); // idle, checking, available, taken, same, error
     const [error, setError] = useState('');
@@ -133,9 +136,10 @@ export function useUsernameValidation(currentUsername = null, requireAuth = true
             } catch {
                 setStatus('error');
                 setError('Error checking username');
+                setGlobalError('Username validation is unavailable right now.');
             }
         }, 400);
-    }, [currentUsername, requireAuth]);
+    }, [currentUsername, requireAuth, setGlobalError]);
 
     const reset = useCallback((initialValue = '') => {
         setUsername(initialValue);

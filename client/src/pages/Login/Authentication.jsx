@@ -1,5 +1,5 @@
-import Signup from "../../Components/Authentication/Signup/Signup.jsx";
-import Login from "../../Components/Authentication/Login/Login.jsx";
+import Signup from "../../components/Authentication/Signup/Signup.jsx";
+import Login from "../../components/Authentication/Login/Login.jsx";
 export function Authentication() {
     return (<div>
         <Login />

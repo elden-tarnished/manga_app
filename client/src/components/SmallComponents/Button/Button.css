@@ -1,0 +1,37 @@
+/* ⚠️ ISSUE: Using !important
+   WHY IT'S BAD: !important makes styles hard to override and maintain
+   BETTER: Increase specificity like .btn.active or use proper cascading order
+   WHEN IT'S OK: Only use in utilities or when overriding third-party CSS */
+.active {
+  background-color: #722323 !important;
+  color: white !important;
+}
+
+/* 💡 TIP: This duplicates .active styles above
+   WHY IT MATTERS: Duplicate styles increase file size and maintenance burden
+   BETTER: Combine selectors like .active, .pagination__isSelected { ... }
+   OR: Remove one if they serve the same purpose */
+.pagination__isSelected {
+  background-color: #722323;
+  color: white;
+}
+
+
+/* ⚠️ ISSUE: Another !important usage on border-color
+   WHY AVOID: Makes debugging and overriding difficult later
+   SOLUTION: Restructure CSS specificity or check what's forcing you to use !important */
+.btn {
+  background-color: #FAF7F3;
+  color: black;
+  border-color: #BA487F !important;
+  transition: background-color 0.3s, color 0.2s;
+}
+
+.btn:hover {
+  background-color: #F0E4D3;
+  color: #BA487F;
+}
+
+.btn.active:hover {
+  background-color: #722323;
+}

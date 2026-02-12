@@ -362,12 +362,7 @@ async function writeMAL_To_DB(url) {
         )
         .join(", ");
       const relatedMangaParams = related_manga_arr
-        .map((e) => [
-          id,
-          e.node.id,
-          e.relation_type,
-          e.relation_type_formatted,
-        ])
+        .map((e) => [id, e.node.id, e.relation_type, e.relation_type_formatted])
         .flat();
       await dbClient.query(
         `INSERT INTO related_manga (manga_id, related_manga_id, relation_type, relation_type_formatted)

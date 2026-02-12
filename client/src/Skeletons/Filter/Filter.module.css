@@ -18,7 +18,7 @@
   border: 0;
   background-color: black;
   flex-grow: 1;
-
+  cursor: pointer;
 }
 
 
@@ -73,6 +73,6 @@
   .filter__expand {
     border-radius: 20px;
     color: transparent;
-
+    cursor: pointer;
   }
 }
