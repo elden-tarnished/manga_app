@@ -21,7 +21,6 @@ export function UserIcon() {
   const rect = useRef(null)
   const background = useRef(null)
   const isAuthenticated = useAuth()
-  console.log('isAuthenticated', isAuthenticated)
   useEffect(() => {
     if (isAuthenticated.isAuthenticated) {
       setMenuRoutes({

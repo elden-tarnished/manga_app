@@ -11,17 +11,17 @@ import { ChangeInfo } from "./ChangeInfo/changeInfo.jsx";
 import Popup from "../Popup/Popup.jsx";
 import { useAppError } from "../../Context/AppErrorContext.jsx";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+gsap.registerPlugin(ScrambleTextPlugin, SplitText);
 export function UserMenu({ onLogout }) {
-  gsap.registerPlugin(ScrambleTextPlugin, SplitText);
   const { user, logout } = useAuth();
   const { setGlobalError } = useAppError();
   const navigate = useNavigate();
   const container = useRef(null);
   const tl = useRef([])
   const tlClick = useRef(null);
-  const layerTop = useRef(null);
   const layerBottom = useRef(null);
-  const layerLeft = useRef(null);
 
   const buttonRef = useRef([]);
   const itemWrapperRef = useRef([]);
@@ -70,11 +70,6 @@ export function UserMenu({ onLogout }) {
     }
   };
 
-  useGSAP(() => {
-    if (showChangeInfo) return;
-    // Cleanup happens automatically via useGSAP context
-  }, { dependencies: [showChangeInfo] });
-
   const handleFavorites = () => {
     navigate('/favorite');
   };
@@ -89,7 +84,7 @@ export function UserMenu({ onLogout }) {
 
   const confirmLogout = async () => {
     try {
-      const response = await fetch('http://localhost:3000/user/logout', {
+      const response = await fetch(API_URL+'/user/logout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'

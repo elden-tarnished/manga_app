@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL;
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -17,7 +18,7 @@ export function AuthProvider({ children }) {
       setUser(response.data);
       return response.data;
     } catch (error) {
-      con
+      console.log(error);
       setUser(null);
       return null;
     } finally {
@@ -53,10 +54,11 @@ export function AuthProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    console.log('useAuth must be used within an AuthProvider');
   }
   return context;
 }

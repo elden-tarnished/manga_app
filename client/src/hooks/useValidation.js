@@ -2,7 +2,8 @@ import { useState, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useAppError } from '../Context/AppErrorContext.jsx';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 /**
  * Custom hook for password validation with backend API
@@ -51,8 +52,8 @@ export function usePasswordValidation() {
     const isValid = useCallback(() => {
         if (!password) return true; // Empty is valid (optional)
         if (errors.length > 0) return false;
-        if (password !== confirmPassword) return false;
-        return true;
+        return password === confirmPassword;
+
     }, [password, confirmPassword, errors]);
 
     return {

@@ -16,7 +16,7 @@ gsap.registerPlugin(SplitText, Observer)
 const toFavoriteFlag = (value) => value === true || value === "t" || value === 1 || value === "1";
 
 export function SearchBar() {
-  const URL = 'http://localhost:3000/';
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const { setGlobalError } = useAppError();
 
@@ -76,7 +76,7 @@ export function SearchBar() {
         return;
       }
       try {
-        const result = await axios.get(`${URL}search?q=${inputValue}`, {
+        const result = await axios.get(`${API_URL}/search?q=${inputValue}`, {
           withCredentials: true,
         })
         if (result.data.length === 0) {
@@ -317,7 +317,6 @@ export function SearchBar() {
   })
 
   const onPointerLeave = contextSafe(() => {
-    console.log('in pointer: ', inputValue)
     if (!inputValue) {
       resultContainerHeightAnimate(0)
       tlRef.current.reverse().eventCallback("onCompelete", () => setInputValue(""))
@@ -348,7 +347,7 @@ export function SearchBar() {
     let isMounted = true;
     const fetchDataById = async () => {
       try {
-        const result = await axios.get(`${URL}manga/${currentId}`, {
+        const result = await axios.get(`${API_URL}/manga/${currentId}`, {
           withCredentials: true,
         });
         if (!isMounted) return;
@@ -357,7 +356,6 @@ export function SearchBar() {
         setImgUrl(result.data?.manga?.main_picture_large ?? null);
       } catch (err) {
         if (!isMounted) return;
-        console.log('Error fetching data by ID:', err);
         setGlobalError(err?.response?.data?.error || 'Failed to load manga details.');
         setCurrentId(-1);
       }

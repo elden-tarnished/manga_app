@@ -11,7 +11,8 @@ import Item from "../../components/Manga/OnClick/Item.jsx";
 import { useAppError } from "../../Context/AppErrorContext.jsx";
 import "../../components/Manga/MangaContainer.css";
 
-const URL = "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL;
+
 const PAGE_SIZE = 24;
 const toFavoriteFlag = (value) => value === true || value === "t" || value === 1 || value === "1";
 
@@ -62,7 +63,7 @@ export function SearchPage() {
     const fetchSearchResult = async () => {
       setLoading(true);
       try {
-        const result = await axios.get(`${URL}/search`, {
+        const result = await axios.get(`${API_URL}/search`, {
           withCredentials: true,
           params: {
             q: query,
@@ -100,7 +101,7 @@ export function SearchPage() {
     let isMounted = true;
     const fetchDataById = async () => {
       try {
-        const result = await axios.get(`${URL}/manga/${currentId}`, {
+        const result = await axios.get(`${API_URL}/manga/${currentId}`, {
           withCredentials: true,
         });
         if (!isMounted) return;

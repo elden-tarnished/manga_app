@@ -13,7 +13,7 @@ export default function Signup() {
   const navigate = useNavigate();
   const { setGlobalError } = useAppError();
 
-  const URL = 'http://localhost:3000';
+  const API_URL = import.meta.env.VITE_API_URL;
   const errorRef = useRef(null);
 
   const [username, setUsername] = useState('');
@@ -52,18 +52,14 @@ export default function Signup() {
 
     try {
       setLoading(true);
-
-      const res = await axios.post(
-        `${URL}/user/signup`,
+      await axios.post(
+        `${API_URL}/user/signup`,
         { username, password: passwordValidation.password, email },
         { withCredentials: true },
       );
-
-      console.log('Signup success:', res.data);
       setUsername('');
       setEmail('');
       passwordValidation.reset();
-
       navigate('/login');
     } catch (err) {
       const message =

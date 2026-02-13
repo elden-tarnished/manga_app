@@ -5,7 +5,7 @@ import styles from "./Heart.module.css";
 import axios from "axios";
 import { useAppError } from "../../../Context/AppErrorContext.jsx";
 
-const URL = "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL;
 gsap.registerPlugin(MorphSVGPlugin);
 
 export function Heart({ mangaId, setError, initialActive = false, width }) {
@@ -71,7 +71,7 @@ export function Heart({ mangaId, setError, initialActive = false, width }) {
     if (loading || !heartPathRef.current || !heartSvgRef.current) return;
 
     const nextActive = !active;
-    const endpoint = `${URL}/manga/user/favorites/${mangaId}`;
+    const endpoint = `${API_URL}/manga/user/favorites/${mangaId}`;
 
     setLoading(true);
     startLoadingAnimation();

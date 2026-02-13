@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+/* eslint-disable no-unused-vars */
+import {useRef} from 'react';
 import { useOutlet, useLocation } from 'react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Footer } from '../components/Footer/Footer.jsx';
@@ -67,7 +68,6 @@ function LayoutContent() {
 
   const errorRef = useRef(null)
   useGSAP(() => {
-    console.log("current: ", errorState.error)
     if (!errorState.error) return;
 
     gsap.timeline()

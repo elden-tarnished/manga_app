@@ -17,7 +17,7 @@ import './MangaContainer.css'
 import { useIsMobile } from '../SmallComponents/IsMobileProvider.jsx';
 
 
-const URL = "http://localhost:3000"
+const API_URL = import.meta.env.VITE_API_URL;
 const FAVORITE_PAGE_SIZE = 24;
 const toFavoriteFlag = (value) => value === true || value === "t" || value === 1 || value === "1";
 const parsePageFromQuery = () => {
@@ -101,7 +101,7 @@ export function MangaContainer({ mode = 'browse' }) {
     const fetchDataById = async () => {
 
       try {
-        const result = await axios.get(URL + `/manga/${currentId}`, { withCredentials: true })
+        const result = await axios.get(API_URL + `/manga/${currentId}`, { withCredentials: true })
         setItemData(result.data)
         setItemLoaded(true)
         setImgUrl(result.data.manga.main_picture_large)
@@ -160,7 +160,7 @@ export function MangaContainer({ mode = 'browse' }) {
     async function fetchBrowseData() {
       setLoading(true);
       try {
-        const result = await axios.get(URL + '/manga', {
+        const result = await axios.get(API_URL + '/manga', {
           withCredentials: true,
           params: {
             genre,
@@ -184,7 +184,7 @@ export function MangaContainer({ mode = 'browse' }) {
         }
       } catch (err) {
         if (!isMounted) return;
-        console.log('eRRor', err);
+        console.log('error', err);
         setMangas([]);
         const message = err?.response?.data?.error || 'Failed to load manga.';
         setError(message);
@@ -220,7 +220,7 @@ export function MangaContainer({ mode = 'browse' }) {
     async function fetchFavorites() {
       setLoading(true);
       try {
-        const result = await axios.get(`${URL}/user/favorites`, {
+        const result = await axios.get(`${API_URL}/user/favorites`, {
           withCredentials: true,
         });
         if (!isMounted) return;

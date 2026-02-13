@@ -18,7 +18,6 @@ export function IsMobileProvider({ children, brealpoint = 768 }) {
     mm.addEventListener('change', handleMatchMedia)
     return () => mm.removeEventListener('change', handleMatchMedia)
   }, [query])
-  console.log('is mobile in the main shit: ', isMobile)
 
 
   return (
@@ -29,6 +28,7 @@ export function IsMobileProvider({ children, brealpoint = 768 }) {
 
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useIsMobile() {
   return useContext(IsMobileContext)
 }

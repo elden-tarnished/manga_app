@@ -7,7 +7,8 @@ import gsap from 'gsap';
 import { usePasswordValidation, useUsernameValidation } from '../../../hooks/useValidation.js';
 import { useAppError } from '../../../Context/AppErrorContext.jsx';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 // Reusable Input Component
 function FormInput({ label, type = 'text', value, onChange, placeholder, error, statusIcon }) {

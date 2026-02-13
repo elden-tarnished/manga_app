@@ -94,9 +94,6 @@ export function MangaCard(props) {
         stagger: 0.04,
         duration: 0.5,
         ease: 'none',
-        onComplete: () => {
-          console.log('image animation complete')
-        }
       })
     }
   }, { dependencies: [imgLoading], scope: cardRef });
@@ -320,7 +317,6 @@ export function MangaCard(props) {
   const statusClass = STATUS_MAP[status] || 'NA';
   const CapitalizedMediaType = media_type ? media_type.charAt(0).toUpperCase() + media_type.slice(1) : '';
   const onClick = contextSafe(() => {
-    console.log('Card clicked:', id);
     setCurrentId(id)
     setIsCurrentIdFromCard(true)
     setItemLoaded(false)

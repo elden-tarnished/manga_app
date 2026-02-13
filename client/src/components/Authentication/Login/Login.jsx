@@ -20,7 +20,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const URL = 'http://localhost:3000';
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useGSAP(() => {
     if (!errorRef.current || !error) return
@@ -41,12 +41,11 @@ export default function Login() {
       setLoading(true);
 
       const res = await axios.post(
-        `${URL}/user/login`,
+        `${API_URL}/user/login`,
         { username: identifier, password },
         { withCredentials: true },
       );
 
-      console.log('Login successful:', res.data);
       login(res.data.user); // Update global user state
       navigate('/');
     } catch (err) {
