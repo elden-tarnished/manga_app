@@ -15,12 +15,31 @@ import createUserRoutes from "./routes/userRoutes.js";
 const app = express();
 const port = Number(process.env.PORT || 3000);
 
+const normalizeOrigin = (value = "") =>
+  value.trim().replace(/^['"]|['"]$/g, "").replace(/\/$/, "");
+const defaultOrigins = ["http://localhost:5173", "https://manga-app-mu.vercel.app"];
+const envOriginsRaw = process.env.CLIENT_ORIGINS ?? process.env.CLIENT_ORIGIN ?? "";
+const allowedOrigins = new Set(
+  (envOriginsRaw || defaultOrigins.join(","))
+    .split(",")
+    .map(normalizeOrigin)
+    .filter(Boolean),
+);
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.set("trust proxy", 1);
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+    origin(origin, callback) {
+      // Allow non-browser clients (curl/Postman) with no Origin header.
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.has(normalizeOrigin(origin))) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true,
   }),
 );
