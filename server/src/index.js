@@ -17,9 +17,10 @@ const port = Number(process.env.PORT || 3000);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+app.set("trust proxy", 1);
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
     credentials: true,
   }),
 );
