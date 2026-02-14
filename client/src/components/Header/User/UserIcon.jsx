@@ -51,7 +51,7 @@ export function UserIcon() {
     tlIn.current = gsap.timeline({ paused: true })
       .to(circle.current, {
         scale: 5.1,
-        y: 10,
+        y: 7,
         ease: 'power3.out',
       })
       .to(rect.current, {

@@ -19,8 +19,10 @@ export function Icon() {
   const titleRef = useRef(null);
 
   useGSAP(() => {
+    let tl;
+    tl = null
     if (isMobile) return
-    const tl = gsap.timeline({
+    tl = gsap.timeline({
       paused: true, defaults: {
         transformOrigin: "50% 50%",
       }
@@ -53,14 +55,15 @@ export function Icon() {
       onHoverEnd: () => {
         tl.reverse()
       },
-      onClick: () => {
-        navigate("/")
-      }
     })
   }, { dependencies: [isMobile] })
 
   return (
-    <div className={styles.container} ref={containerRef}>
+    <div
+
+      onClick={() => navigate("/")}
+      className={styles.container}
+      ref={containerRef}>
       <div>
         <svg
           ref={svgRef}

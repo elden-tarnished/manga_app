@@ -14,7 +14,6 @@ export default function ItemImage({ imgUrl, data, onClick, isCover = false }) {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [startRect, setStartRect] = useState(null);
   const imgAspectRatio = useRef(null);
-  const isMobile = useIsMobile()
 
   useEffect(() => {
     setIsLoading(true);

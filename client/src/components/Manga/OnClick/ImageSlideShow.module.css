@@ -24,10 +24,9 @@
 
 .imgDiv {
   flex-shrink: 0;
-  background-color: white;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #F0E4D3 30%, #DCC5B2 50%, #F0E4D3 70%) 100% 0;
-  background-size: 600% 100%;
+    border-radius: 10px;
+    background: white linear-gradient(135deg, #F0E4D3 30%, #DCC5B2 50%, #F0E4D3 70%) 100% 0;
+    background-size: 600% 100%;
 }
 
 /* --- Carousel Navigation Buttons --- */

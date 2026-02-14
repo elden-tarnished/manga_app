@@ -46,7 +46,10 @@ export function Heart({ mangaId, setError, initialActive = false, width }) {
 
   const finishRequestAnimation = (isActive) => {
     gsap.killTweensOf(heartSvgRef.current);
-    gsap.set(heartSvgRef.current, { rotate: 0 });
+    gsap.to(heartSvgRef.current, {
+      rotate: 0,
+      transformOrigin: "50% 50%",
+    })
     gsap.to(heartPathRef.current, {
       duration: 0.25,
       morphSVG: { shape: HEART_D },

@@ -13,11 +13,11 @@ export default function Item(props) {
     title, englishTitle, synonym, japaneseTitle,
     startDate, endDate,
     synopsis, background,
-    mean, rank, popularity, numListUsers, numScoringUsers,
+    mean, rank, popularity,
     status, nsfw, mediaType,
     numChapters, numVolumes,
     serialization,
-    picturesLarge, picturesMedium,
+    picturesLarge,
     authors, tags,
   } = props.manga;
 

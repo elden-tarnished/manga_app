@@ -63,7 +63,6 @@
   padding: 8px 16px;
   border: 1px solid #8D493A;
   border-radius: 2px;
-  border-width: 1px;
   transition: background-color 0.35s ease, color 0.25s ease, border-color 0.25s ease, border-radius 0.25s ease;
 
 }

@@ -1,121 +1,193 @@
-import { useEffect, useRef, useLayoutEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
 import styles from './ExpandedImageOverlay.module.css';
+
+const MAX_VIEWPORT_RATIO = 0.9;
+const OVERLAY_BG = 'rgba(0,0,0,0.82)';
+
+function getSafeAspectRatio(startRect, naturalAspectRatio) {
+  if (naturalAspectRatio && Number.isFinite(naturalAspectRatio) && naturalAspectRatio > 0) {
+    return naturalAspectRatio;
+  }
+  const fallback = startRect?.width && startRect?.height ? (startRect.width / startRect.height) : 1;
+  return Number.isFinite(fallback) && fallback > 0 ? fallback : 1;
+}
+
+function getTargetRect(startRect, aspect) {
+  const viewportW = window.innerWidth;
+  const viewportH = window.innerHeight;
+
+  let width = viewportW * MAX_VIEWPORT_RATIO;
+  let height = width / aspect;
+
+  if (height > viewportH * MAX_VIEWPORT_RATIO) {
+    height = viewportH * MAX_VIEWPORT_RATIO;
+    width = height * aspect;
+  }
+
+  return {
+    width,
+    height,
+    top: (viewportH - height) / 2,
+    left: (viewportW - width) / 2,
+    startCenterX: startRect.left + (startRect.width / 2),
+    startCenterY: startRect.top + (startRect.height / 2),
+  };
+}
 
 export default function ExpandedImageOverlay({ isOpen, startRect, imgUrl, onClose, naturalAspectRatio }) {
   const overlayRef = useRef(null);
   const imgRef = useRef(null);
-  const containerRef = useRef(document.createElement('div'));
+  const timelineRef = useRef(null);
+  const isClosingRef = useRef(false);
+  const portalRootRef = useRef(null);
 
-  // Ensure we append to body
+  if (!portalRootRef.current) {
+    portalRootRef.current = document.createElement('div');
+    portalRootRef.current.className = styles.portalRoot;
+  }
+
   useEffect(() => {
-    document.body.appendChild(containerRef.current);
+    const portalNode = portalRootRef.current;
+    document.body.appendChild(portalNode);
     return () => {
-      document.body.removeChild(containerRef.current);
+      timelineRef.current?.kill();
+      if (portalNode.parentNode) portalNode.parentNode.removeChild(portalNode);
     };
   }, []);
 
-  const { contextSafe } = useGSAP({ scope: containerRef });
+  const handleClose = useCallback(() => {
+    if (isClosingRef.current) return;
+    const tl = timelineRef.current;
+    if (!tl) {
+      onClose?.();
+      return;
+    }
+    isClosingRef.current = true;
+    tl.reverse();
+  }, [onClose]);
 
   useLayoutEffect(() => {
-    if (!isOpen || !startRect || !imgRef.current) return;
+    if (!isOpen || !startRect || !overlayRef.current || !imgRef.current) return;
 
-    const img = imgRef.current;
+    const overlayEl = overlayRef.current;
+    const imgEl = imgRef.current;
+    const aspect = getSafeAspectRatio(startRect, naturalAspectRatio);
 
-    // Initial State: Match the thumbnail exactly
-    gsap.set(overlayRef.current, {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'rgba(0,0,0,0)',
-      zIndex: 9999,
-      pointerEvents: 'auto'
+    const applyTargetRect = () => {
+      const target = getTargetRect(startRect, aspect);
+      gsap.set(imgEl, {
+        top: target.top,
+        left: target.left,
+        width: target.width,
+        height: target.height,
+      });
+      return target;
+    };
+
+    const target = applyTargetRect();
+    const targetCenterX = target.left + (target.width / 2);
+    const targetCenterY = target.top + (target.height / 2);
+
+    const scaleX = startRect.width / target.width;
+    const scaleY = startRect.height / target.height;
+    const fromX = target.startCenterX - targetCenterX;
+    const fromY = target.startCenterY - targetCenterY;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    gsap.set(overlayEl, { backgroundColor: 'rgba(0,0,0,0)', autoAlpha: 1 });
+    gsap.set(imgEl, {
+      x: fromX,
+      y: fromY,
+      scaleX,
+      scaleY,
+      borderRadius: 6,
+      transformOrigin: 'center center',
     });
 
-    gsap.set(img, {
-      position: 'absolute',
-      top: startRect.top,
-      left: startRect.left,
-      width: startRect.width,
-      height: startRect.height,
-      objectFit: 'cover',
-      borderRadius: '5px' // Match your card radius
-    });
+    timelineRef.current?.kill();
+    isClosingRef.current = false;
 
-    // Calculate Target Dimensions (90vw or 90vh constraint)
-    const viewportW = window.innerWidth;
-    const viewportH = window.innerHeight;
-
-    // Default to a sane aspect ratio if missing
-    const aspect = naturalAspectRatio || (startRect.width / startRect.height);
-
-    // Try fitting by width first (90vw)
-    let targetW = viewportW * 0.9;
-    let targetH = targetW / aspect;
-
-    // If height is too big, fit by height instead (90vh)
-    if (targetH > viewportH * 0.9) {
-      targetH = viewportH * 0.9;
-      targetW = targetH * aspect;
-    }
-
-    const targetTop = (viewportH - targetH) / 2;
-    const targetLeft = (viewportW - targetW) / 2;
-
-    // Animate In
-    const tl = gsap.timeline({
-      onReverseComplete: () => {
-        onClose(); // Tell parent we are done closing
-      }
-    });
-
-    tl.to(overlayRef.current, {
-      backgroundColor: 'rgba(0,0,0,0.8)',
-      duration: 0.4,
-      ease: 'power2.out'
-    }, 0)
-      .to(img, {
-        top: targetTop,
-        left: targetLeft,
-        width: targetW,
-        height: targetH,
-        borderRadius: 0, // Optional: animate to sharp corners
-        duration: 0.5,
-        ease: 'power3.inOut' // Classic nice expand ease
-      }, 0);
-
-    // Attach reverse function to the element so we can call it from onClick
-    overlayRef.current.reverseAnimation = () => tl.reverse();
-
-  }, [isOpen, startRect]);
-
-  const handleClose = contextSafe(() => {
-    if (overlayRef.current && overlayRef.current.reverseAnimation) {
-      overlayRef.current.reverseAnimation();
+    if (prefersReducedMotion) {
+      gsap.set(overlayEl, { backgroundColor: OVERLAY_BG });
+      gsap.set(imgEl, { x: 0, y: 0, scaleX: 1, scaleY: 1, borderRadius: 0 });
     } else {
-      onClose();
+      timelineRef.current = gsap.timeline({
+        paused: true,
+        defaults: { overwrite: 'auto' },
+        onReverseComplete: () => {
+          isClosingRef.current = false;
+          onClose?.();
+        },
+      });
+
+      timelineRef.current
+        .to(overlayEl, {
+          backgroundColor: OVERLAY_BG,
+          duration: 0.28,
+          ease: 'power2.out',
+        }, 0)
+        .to(imgEl, {
+          x: 0,
+          y: 0,
+          scaleX: 1,
+          scaleY: 1,
+          borderRadius: 0,
+          duration: 0.44,
+          ease: 'power3.out',
+        }, 0);
+
+      timelineRef.current.play();
     }
-  });
+
+    const onResize = () => {
+      if (!isClosingRef.current) applyTargetRect();
+    };
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      timelineRef.current?.kill();
+      timelineRef.current = null;
+      isClosingRef.current = false;
+    };
+  }, [isOpen, startRect, naturalAspectRatio, onClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
+  const onOverlayPointerDown = useCallback(() => {
+    handleClose();
+  }, [handleClose]);
 
   if (!isOpen) return null;
 
-  return ReactDOM.createPortal(
+  return createPortal(
     <div
       ref={overlayRef}
       className={styles.overlay}
-      onClick={handleClose}
+      role="dialog"
+      aria-modal="true"
+      onPointerDown={onOverlayPointerDown}
     >
       <img
         ref={imgRef}
         src={imgUrl}
-        alt="Expanded"
+        alt="Expanded manga cover"
         className={styles.expandedImg}
+        decoding="async"
+        draggable={false}
       />
     </div>,
-    containerRef.current
+    portalRootRef.current
   );
 }

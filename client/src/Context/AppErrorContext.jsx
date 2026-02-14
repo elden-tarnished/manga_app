@@ -35,6 +35,7 @@ export function AppErrorProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAppError() {
   const context = useContext(AppErrorContext);
   if (!context) {
@@ -43,4 +44,5 @@ export function useAppError() {
   return context;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { INITIAL_ERROR_STATE };

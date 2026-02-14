@@ -1,10 +1,37 @@
+.portalRoot {
+  position: relative;
+  z-index: 9999;
+}
+
 .overlay {
-  display: block; /* Managed by GSAP/React */
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: block;
   overflow: hidden;
+  background-color: rgba(0, 0, 0, 0);
+  cursor: zoom-out;
+  touch-action: none;
+  contain: layout paint;
 }
 
 .expandedImg {
+  position: absolute;
   display: block;
+  object-fit: cover;
+  max-width: none;
+  max-height: none;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  will-change: transform, top, left, width, height;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: auto;
+}
+
+@media (max-width: 768px) {
+  .expandedImg {
+    box-shadow: 0 16px 40px -14px rgba(0, 0, 0, 0.45);
+  }
 }

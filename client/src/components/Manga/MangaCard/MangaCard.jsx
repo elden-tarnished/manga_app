@@ -7,7 +7,7 @@ import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin"
 import { Observer } from "gsap/Observer";
 import { Heart } from "../../SmallComponents/Button/Heart.jsx";
 
-gsap.registerPlugin(useGSAP, ScrambleTextPlugin, Observer)
+gsap.registerPlugin(useGSAP, Observer)
 export function MangaCard(props) {
   const {
     id,
@@ -33,7 +33,6 @@ export function MangaCard(props) {
   const cardRef = useRef(null);
   const imgRef = useRef(null);
   const titleRef = useRef(null)
-  const overlay = useRef(null);
 
 
   const detailAndSynopsisRef = useRef(null);
@@ -172,15 +171,6 @@ export function MangaCard(props) {
         opacity: 1,
         x: 0,
       }, '+=0.2').addLabel('tlInner')
-      .to(dateStartRef.current, {
-        duration: 0.8,
-        scrambleText: {
-          text: startYear,
-          chars: "01",
-          speed: 1,
-          ease: 'power1.out'
-        },
-      }, `tlInner+=-${tlCartDuration}`)
       .addPause('pause')
     tlDetailPauseThreshold.current = tl2.current.duration()
 
@@ -328,7 +318,6 @@ export function MangaCard(props) {
       <div className={`whole ${isRight ? "right" : "left"}`}
         ref={cardRef}
       >
-        <div ref={overlay} className="overlay"></div>
         <div
           className={`card ${imgLoading ? "loadingShimmer" : ""}`}
           draggable='false'
@@ -345,56 +334,58 @@ export function MangaCard(props) {
             ref={imgRef} className="img" src={main_picture_large} alt={title} draggable='false' />
           <h4 className="title center-text" ref={titleRef}>{title}</h4>
         </div>
-        <div className={`detail-and-synopsis__container ${isRight ? "rightC" : "leftC"}`} ref={detailAndSynopsisRef}>
-          <div className={`detail__container ${isRight && "detail__container--right"}`} ref={detailRef}>
-            <div className='media-type-and-status__container'>
-              <h5 className={`media-type ${media_type}`} ref={mediaTypeRef}>{(CapitalizedMediaType === 'one_shot') ? CapitalizedMediaType.replace('_', '-') : CapitalizedMediaType.replace('_', ' ')}</h5>
-              <h5 className={`sts_mobile status ${statusClass}`} ref={statusRef}>{isMobile ? statusClass[0] : statusClass}</h5>
-            </div>
-            <div className="title-date__container" ref={titleDateContainerRef}>
-              <h1 className='title'>{title}</h1>
-              {!isMobile && <h4 className='date' ref={dateRef}>(
-                {(startYear) ?
-                  <span className='start-date' ref={dateStartRef}>0000</span>
-                  : <span>Date: N/A</span>
-                }
-                )</h4>}
-            </div>
-            <div className="mean__container">
-              {mean ? <h4 className="score" ref={meanRef}>Score: {mean}</h4> : ''}
-              {(!isMobile && num_volumes > 0) ? <div className="d" ref={dRef}></div> : ""}
-              {(!isMobile && num_volumes > 0) ? <h4 className="vols" ref={numVolumesRef}>Volumes: {num_volumes}</h4> : ""}
-            </div>
-            {synopsis &&
-              <div className="synopsis-svg__container">
-                <svg
-                  className="svg"
-                  height="16"
-                  width="16"
-                  viewBox="0 0 512 512"
-                  fill="#000000"
-                  stroke="#000000"
-                  strokeWidth="0.00512"
-                >
-                  <g strokeWidth="0"></g>
-                  <g strokeLinecap="round" strokeLinejoin="round" stroke="#CCCCCC" strokeWidth="1.024"></g>
-                  <g>
-                    <path
-                      fill="#cfcfff"
-                      d="M505.183,123.179c-9.087-9.087-23.824-9.089-32.912,0.002l-216.266,216.27L39.729,123.179
+        {
+          <div className={`detail-and-synopsis__container ${isRight ? "rightC" : "leftC"}`} ref={detailAndSynopsisRef}>
+            <div className={`detail__container ${isRight && "detail__container--right"}`} ref={detailRef}>
+              <div className='media-type-and-status__container'>
+                <h5 className={`media-type ${media_type}`} ref={mediaTypeRef}>{(CapitalizedMediaType === 'one_shot') ? CapitalizedMediaType.replace('_', '-') : CapitalizedMediaType.replace('_', ' ')}</h5>
+                <h5 className={`sts_mobile status ${statusClass}`} ref={statusRef}>{isMobile ? statusClass[0] : statusClass}</h5>
+              </div>
+              <div className="title-date__container" ref={titleDateContainerRef}>
+                <h1 className='title'>{title}</h1>
+                {!isMobile && <h4 className='date' ref={dateRef}>(
+                  {(startYear) ?
+                    <span className='start-date' ref={dateStartRef}>{startYear}</span>
+                    : <span>Date: N/A</span>
+                  }
+                  )</h4>}
+              </div>
+              <div className="mean__container">
+                {mean ? <h4 className="score" ref={meanRef}>Score: {mean}</h4> : ''}
+                {(!isMobile && num_volumes > 0) ? <div className="d" ref={dRef}></div> : ""}
+                {(!isMobile && num_volumes > 0) ? <h4 className="vols" ref={numVolumesRef}>Volumes: {num_volumes}</h4> : ""}
+              </div>
+              {synopsis &&
+                <div className="synopsis-svg__container">
+                  <svg
+                    className="svg"
+                    height="16"
+                    width="16"
+                    viewBox="0 0 512 512"
+                    fill="#000000"
+                    stroke="#000000"
+                    strokeWidth="0.00512"
+                  >
+                    <g strokeWidth="0"></g>
+                    <g strokeLinecap="round" strokeLinejoin="round" stroke="#CCCCCC" strokeWidth="1.024"></g>
+                    <g>
+                      <path
+                        fill="#cfcfff"
+                        d="M505.183,123.179c-9.087-9.087-23.824-9.089-32.912,0.002l-216.266,216.27L39.729,123.179
                     c-9.087-9.087-23.824-9.089-32.912,0.002c-9.089,9.089-9.089,23.824,0,32.912L239.55,388.82c4.364,4.364,10.283,6.816,
                     16.455,6.816c6.172,0,12.092-2.453,16.455-6.817l232.721-232.727C514.272,147.004,514.272,132.268,505.183,123.179z"
-                    />
-                  </g>
-                </svg>
-                <h5 className={`synopsis__text ${isRight ? "right" : "left"}`} ref={synopsisTextRef} >SYNOPSIS</h5>
-              </div>
-            }
+                      />
+                    </g>
+                  </svg>
+                  <h5 className={`synopsis__text ${isRight ? "right" : "left"}`} ref={synopsisTextRef} >SYNOPSIS</h5>
+                </div>
+              }
+            </div>
+            {synopsis ? <div className='synopsis__container'>
+            </div> : ''}
+            <p className='synopsis' ref={synopsisRef}>{isMobile ? synopsis.slice(1, 240) : synopsis.slice(1, 290)}...</p>
           </div>
-          {synopsis ? <div className='synopsis__container'>
-          </div> : ''}
-          <p className='synopsis' ref={synopsisRef}>{synopsis.slice(1, 290)}...</p>
-        </div>
+        }
       </div>
     </>
   )

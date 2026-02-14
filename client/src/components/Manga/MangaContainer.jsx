@@ -66,7 +66,7 @@ export function MangaContainer({ mode = 'browse' }) {
   const [rerenderImgs, setRerenderImgs] = useState(0);
   useEffect(() => {
 
-    const cardWidth = isMobile ? 147 : 180;
+    const cardWidth = isMobile ? 145 : 180;
     let bucket = Math.floor(window.innerWidth / cardWidth);
     const atWidthRerender = () => {
       const nextBucket = Math.floor(window.innerWidth / cardWidth);

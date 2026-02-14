@@ -4,17 +4,15 @@ import { useGSAP } from '@gsap/react';
 import styles from './ItemLoading.module.css';
 import itemStyles from './Item.module.css'; // Import Item styles for layout matching
 
-export default function ItemLoading({ setItemLoaded, currentId, itemLoaded, transitionalImage, isCurrentIdFromCard }) {
+export default function ItemLoading({ setItemLoaded, currentId, itemLoaded, isCurrentIdFromCard }) {
   const loadingRef = useRef(null);
   const dotBefore = useRef([]);
   const dotAfter = useRef([]);
   const containerRef = useRef(null);
-  const imgRef = useRef(null);
   const lastId = useRef(-2);
 
   const tlLoading = useRef(null);
   const tlContainer = useRef(null);
-  const tlOut = useRef(null);
 
   useGSAP(() => {
     tlContainer.current = gsap.timeline({ paused: false });
