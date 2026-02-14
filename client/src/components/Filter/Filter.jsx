@@ -1,9 +1,8 @@
-import { useContext, useMemo, useRef, useEffect, useState } from "react";
+import { useContext, useMemo, useRef} from "react";
 import { FilterContext } from "../SmallComponents/FilterContext.js";
 import { FilterButton } from "../SmallComponents/Button/Button.jsx";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useWindowSize } from "../SmallComponents/useWindowSize.jsx";
 import './Filter.css';
 
 export function Filter({ FilterOptions }) {
@@ -47,9 +46,6 @@ export function Filter({ FilterOptions }) {
   const directionValues = ['ASC', 'DESC'];
   const filtersKeys = Object.keys(FilterOptions).filter(e => e !== 'validOrder');
 
-  const windowSize = useWindowSize();
-  const [isMobile, setIsMobile] = useState(false);
-
   const filterRef = useRef(null);
   const filterExpandRef = useRef(null);
   const filterHorizontalContainerRef = useRef(null);
@@ -60,14 +56,6 @@ export function Filter({ FilterOptions }) {
   // const limitOrderDirectionCurrents = useMemo(() => {
   //   return (new Set([...genre, ...theme, ...explicitGenre, ...demographic, ...type]));
   // }, [genre, theme, explicitGenre, demographic, type]);
-
-  useEffect(() => {
-    const handleIsMobile = () => {
-      setIsMobile(windowSize.width > 768)
-    };
-    handleIsMobile();
-
-  }, [windowSize])
 
   const { contextSafe } = useGSAP(() => {
     let mm = gsap.matchMedia()
@@ -83,20 +71,22 @@ export function Filter({ FilterOptions }) {
     })
 
     mm.add({
+      isSmallMobile: `(max-width: 353px)`,
       isMobile: `(max-width: ${breakPoint - 1}px)`,
       isDesktop: `(min-width: ${breakPoint}px)`
     }, (context) => {
 
       let { isMobile } = context.conditions;
+      let { isSmallMobile } = context.conditions;
 
       tlRef.current.to('.filter__container', {
-        height: filterRef.current.scrollHeight + 'px',
+        height: filterRef.current.scrollHeight,
         padding: isMobile ? '10px' : '20px',
         duration: 1,
         ease: 'power3.inOut',
       }, 0)
         .to('.filter__expand', {
-          flexGrow: 0,
+          flexGrow: isSmallMobile ? 1 : 0,
           ease: 'power3.inOut',
           padding: !isMobile ? '10px 20px' : '',
         }, 0);

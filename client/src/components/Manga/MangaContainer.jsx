@@ -218,8 +218,8 @@ export function MangaContainer({ mode = 'browse' }) {
     let isMounted = true;
 
     async function fetchFavorites() {
-      setLoading(true);
       try {
+        setLoading(true);
         const result = await axios.get(`${API_URL}/user/favorites`, {
           withCredentials: true,
         });
@@ -265,7 +265,7 @@ export function MangaContainer({ mode = 'browse' }) {
 
   const maxPageNum = isFavoritesMode ? favoriteMaxPageNum : (data?.maxPageNum ?? 1);
   const skeletonCount = isFavoritesMode ? FAVORITE_PAGE_SIZE : Number.parseInt(limit, 10);
-  const showSkeleton = loading && visibleMangas.length === 0;
+  const showSkeleton = loading;
   const emptyMessage = isFavoritesMode ? (error || 'No favorites yet.') : (error || 'No manga found.');
 
   return (<div className='body' ref={containerRef}>

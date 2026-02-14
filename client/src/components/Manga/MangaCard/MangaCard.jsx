@@ -121,8 +121,6 @@ export function MangaCard(props) {
 
     const synopsisStyle = window.getComputedStyle(synopsisRef.current);
     const synopsisWidth = parseFloat(synopsisStyle.getPropertyValue('width'));
-    const synopsisPadding = parseFloat(synopsisStyle.getPropertyValue('padding'));
-    const synopsisWidthAA = synopsisWidth + (2 * synopsisPadding);
 
     tl1.current
       .set(detailAndSynopsisRef.current,
@@ -132,7 +130,7 @@ export function MangaCard(props) {
       .to(detailRef.current,
         {
           opacity: 1,
-          width: synopsisWidthAA,//match media
+          width: synopsisWidth,//match media
           x: 0,
           color: 'rgba(236, 244, 250, 1)',
           '--blur': '9px',
@@ -351,16 +349,16 @@ export function MangaCard(props) {
           <div className={`detail__container ${isRight && "detail__container--right"}`} ref={detailRef}>
             <div className='media-type-and-status__container'>
               <h5 className={`media-type ${media_type}`} ref={mediaTypeRef}>{(CapitalizedMediaType === 'one_shot') ? CapitalizedMediaType.replace('_', '-') : CapitalizedMediaType.replace('_', ' ')}</h5>
-              <h5 className={`status ${statusClass}`} ref={statusRef}>{statusClass}</h5>
+              <h5 className={`sts_mobile status ${statusClass}`} ref={statusRef}>{isMobile ? statusClass[0] : statusClass}</h5>
             </div>
             <div className="title-date__container" ref={titleDateContainerRef}>
               <h1 className='title'>{title}</h1>
-              <h4 className='date' ref={dateRef}>(
+              {!isMobile && <h4 className='date' ref={dateRef}>(
                 {(startYear) ?
                   <span className='start-date' ref={dateStartRef}>0000</span>
                   : <span>Date: N/A</span>
                 }
-                )</h4>
+                )</h4>}
             </div>
             <div className="mean__container">
               {mean ? <h4 className="score" ref={meanRef}>Score: {mean}</h4> : ''}

@@ -24,7 +24,7 @@
   justify-content: center;
   padding: 10px;
   border-radius: 10px;
-  background-color: #FAF7F3;
+  background-color: #F0E4D3;
 }
 
 
@@ -40,6 +40,10 @@
   }
 
   .container {
+    padding: 10px;
     gap: 4px;
+    margin: 0;
+    border-radius: 0;
+    background-color: transparent;
   }
 }

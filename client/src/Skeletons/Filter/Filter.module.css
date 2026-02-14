@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: row-reverse;
   margin-bottom: 20px;
+  margin-top: 10px;
   overflow: hidden;
   border-radius: 22px;
   gap: 10px;
@@ -25,7 +26,7 @@
 .limit__container,
 .direction__container,
 .order__container {
-  background: linear-gradient(105deg, #F0E4D3 40%, #FAF7F3 50%, #F0E4D3 60%) 100% 0;
+  background: linear-gradient(105deg, #F0E4D3 40%, #DCC5B2 50%, #F0E4D3 60%) 100% 0;
   background-size: 400% 100%;
 }
 
@@ -53,11 +54,31 @@
   flex-shrink: 1;
 }
 
+@media (max-width: 353px) {
+  .filter__expand {
+    height: 28px;
+  }
+
+  .filter__container {
+    min-height: 70px;
+    padding: 2px;
+    border-radius: 22px;
+  }
+
+  .order__container {
+    height: 41;
+    flex-grow: 1;
+    flex-shrink: 0;
+  }
+}
+
+
 @media (max-width: 768px) {
   .filter__container {
     width: 98vw;
     padding: 5px;
     height: 41px;
+    gap: 5px;
   }
 
   .direction__container {

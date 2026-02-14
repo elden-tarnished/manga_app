@@ -4,16 +4,13 @@
   margin-bottom: 20px;
   margin-top: 10px;
   background-color: #DCC5B2;
-  border-radius: 0px;
+  border-radius: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
   overflow: hidden;
 }
 
-/* ⚠️ ISSUE: border: 0 could be more explicit
-   WHY: Using 'none' is clearer: border: none; or border: 0 solid transparent;
-   WORKS BUT: Being explicit about intent improves code readability */
 .filter__expand {
   border-radius: 20px;
   border: none;
@@ -124,12 +121,9 @@
 
 }
 
-/* ⚠️ ISSUE: Extra empty line before closing brace (appears multiple times)
-   CONSISTENCY: Remove for cleaner, more professional code */
 .theme-btn__container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-
 }
 
 .btn.limit {
@@ -177,9 +171,35 @@
   background-color: black;
 }
 
+@media (max-width: 353px) {
+  .filter__expand {
+    height: 28px;
+  }
+
+  .filter__container {
+    min-height: 70px;
+    padding: 2px;
+    border-radius: 22px;
+  }
+
+  .order__container {
+    flex-grow: 1;
+    flex-shrink: 0;
+  }
+}
+
 @media (max-width: 768px) {
+  .filter--horizontal__container {
+    gap: 5px
+  }
+
   .order__container {
     flex-direction: column;
+    gap: 5px
+  }
+
+  .tags__container {
+    gap: 5px;
   }
 
   .demographic__container,
@@ -194,7 +214,7 @@
 
 
   .filter__container {
-    height: 45px;
+    height: 43px;
     width: 98vw;
     padding: 2px;
     border-radius: 22px;

@@ -114,8 +114,9 @@
 
 .synopsis {
   height: 228px;
-  min-width: calc(250px - 18px);
+  min-width: 250px;
   padding: 9px;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
@@ -143,6 +144,16 @@
   .media-type {
     font-size: 14px;
     font-weight: 400;
+  }
+
+  .sts_mobile {
+    width: 23px;
+    height: 23px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
   }
 
   .synopsis__text {
@@ -176,9 +187,10 @@
   }
 
   .synopsis {
-    height: calc(230px);
-    min-width: calc((180px - 14px));
-    padding: calc(7px);
+    height: 230px;
+    min-width: min(49vw, 180px);
+    padding: 7px;
+
   }
 
   .rightC {

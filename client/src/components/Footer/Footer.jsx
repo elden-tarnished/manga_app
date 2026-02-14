@@ -13,12 +13,9 @@ export function Footer() {
   const footerAndYear = useRef(null)
   const githubRef = useRef(null)
   const telegramRef = useRef(null)
-  const incremt = useRef(0)
   const isMobile = useIsMobile()
 
   const anchorTagAnimation = useRef(null)
-  const inTl = useRef(null)
-  const outTl = useRef(null)
 
   function hexToRgba(hexColor, opacity) {
     let hex = hexColor.replace('#', '')
@@ -99,36 +96,51 @@ export function Footer() {
     <div className={styles.footerAndYear} ref={footerAndYear}>
       <div className={styles.footer__container}>
         <div className={styles.contacts__container}>
-          <a className={styles.contact} href=''
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
+          <a className={styles.contact} href='mailto:aroofzads@gmail.com'
+            onPointerEnter={onMouseEnter}
+            onPointerLeave={onMouseLeave}
+            onPointerDown={onMouseEnter}
+            onPointerUp={onMouseLeave}
+            onPointerCancel={onMouseLeave}
           ><span className={styles.contactHidden}>Contact Me</span><span className={styles.contactSpan}>Contact Me</span> {contactCopy}</a>
-          <a href=''
+          <a href='https://t.me/elden_tarnished'
+            target={isMobile ? '_self' : '_blank'}
+            rel={isMobile ? undefined : 'noopener noreferrer'}
             className={styles.anchor_animation}
             ref={telegramRef}
-            onMouseEnter={() => onMouseOverAnchorTag(telegramRef)}
-            onMouseLeave={() => onMouseLeaveAnchorTag(telegramRef)}
+            onPointerEnter={() => onMouseOverAnchorTag(telegramRef)}
+            onPointerLeave={() => onMouseLeaveAnchorTag(telegramRef)}
+            onPointerDown={() => onMouseOverAnchorTag(telegramRef)}
+            onPointerUp={() => onMouseLeaveAnchorTag(telegramRef)}
+            onPointerCancel={() => onMouseLeaveAnchorTag(telegramRef)}
           >
             Telegram
           </a>
-          <a href=''
+          <a href='https://github.com/elden-tarnished'
+            target={isMobile ? '_self' : '_blank'}
+            rel={isMobile ? undefined : 'noopener noreferrer'}
             className={styles.anchor_animation}
             ref={githubRef}
-            onMouseEnter={() => onMouseOverAnchorTag(githubRef)}
-            onMouseLeave={() => onMouseLeaveAnchorTag(githubRef)}
+            onPointerEnter={() => onMouseOverAnchorTag(githubRef)}
+            onPointerLeave={() => onMouseLeaveAnchorTag(githubRef)}
+            onPointerDown={() => onMouseOverAnchorTag(githubRef)}
+            onPointerUp={() => onMouseLeaveAnchorTag(githubRef)}
+            onPointerCancel={() => onMouseLeaveAnchorTag(githubRef)}
           >
             Github
           </a>
         </div>
       </div>
       <div className={styles.footContainer} >
-        <p className={styles.year}>© {year} siteName?</p>
+        <p className={styles.year}>© {year} Mangaso</p>
         <div className=''>
           <p className={styles.p}>all rights reserved. manga data courtesy of myanimelist.net—used under their terms. this is an unofficial fan site.</p>
           <div className={styles.terms}>
-            <a href="">DMCA</a>
+            {//<a href="">DMCA</a>
+            }
             <a href="">Privacy</a>
-            <a href="">Terms</a>
+            {//<a href="">Terms</a>
+            }
           </div>
         </div>
       </div>
