@@ -26,7 +26,7 @@
 .fader {
   border-radius: 30px 30px 0 0;
   border: 2px solid #8D493A;
-  border-bottom: 0px;
+  border-bottom: 0;
   box-sizing: border-box;
   position: fixed;
   top: 5vh;
@@ -38,7 +38,7 @@
 .faderBottom {
   border-radius: 0 0 30px 30px;
   border: 2px solid #8D493A;
-  border-top: 0px;
+  border-top: 0;
   box-sizing: border-box;
   position: fixed;
   bottom: 5vh;
@@ -374,7 +374,7 @@ hr {
   }
 
   100% {
-    background-position: 0% 0;
+    background-position: 0 0;
   }
 }
 
@@ -396,9 +396,10 @@ hr {
     border-radius: 0;
   }
 
+
   .container {
     height: 100vh;
-    padding: 0 15px 15px 15px;
+    padding: 0 15px 55px 15px;
   }
 
   .img__container {
@@ -500,7 +501,7 @@ hr {
   .t {
     font-size: 15px;
     padding-bottom: 5px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
 
   .recommended__container,
@@ -548,7 +549,7 @@ hr {
   }
 
   .container {
-    padding: 0 10px 20px 10px;
+    padding: 0 10px 50px 10px;
   }
 
   .button {
