@@ -70,12 +70,11 @@ export function usePasswordValidation() {
 }
 
 /**
- * Custom hook for username validation with backend API
- * Used by both Signup and ChangeInfo components
- * @param {string} currentUsername - The user's current username (for ChangeInfo)
- * @param {boolean} requireAuth - Whether the API requires authentication
+ * Custom hook for username validation with backend API (logged-in users,
+ * used by ChangeInfo). Signup relies on the server's answer on submit.
+ * @param {string} currentUsername - The user's current username
  */
-export function useUsernameValidation(currentUsername = null, requireAuth = true) {
+export function useUsernameValidation(currentUsername = null) {
     const { setGlobalError } = useAppError();
     const [username, setUsername] = useState('');
     const [status, setStatus] = useState('idle'); // idle, checking, available, taken, same, error
@@ -114,13 +113,8 @@ export function useUsernameValidation(currentUsername = null, requireAuth = true
 
         timeoutRef.current = setTimeout(async () => {
             try {
-                // Use check-username for authenticated users, different endpoint for signup
-                const endpoint = requireAuth
-                    ? `${API_URL}/user/check-username`
-                    : `${API_URL}/user/check-username-public`;
-
                 const { data } = await axios.post(
-                    endpoint,
+                    `${API_URL}/user/check-username`,
                     { username: value },
                     { withCredentials: true }
                 );
@@ -140,7 +134,7 @@ export function useUsernameValidation(currentUsername = null, requireAuth = true
                 setGlobalError('Username validation is unavailable right now.');
             }
         }, 400);
-    }, [currentUsername, requireAuth, setGlobalError]);
+    }, [currentUsername, setGlobalError]);
 
     const reset = useCallback((initialValue = '') => {
         setUsername(initialValue);

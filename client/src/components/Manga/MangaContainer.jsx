@@ -190,9 +190,11 @@ export function MangaContainer({ mode = 'browse' }) {
         setError(message);
         setGlobalError(message);
       } finally {
-        if (!isMounted) return;
-        setLoading(false);
-        setStaticLoading(false);
+        // A return here would silently override the try/catch result; just skip the updates.
+        if (isMounted) {
+          setLoading(false);
+          setStaticLoading(false);
+        }
       }
     }
 
@@ -233,9 +235,11 @@ export function MangaContainer({ mode = 'browse' }) {
         setError(message);
         setGlobalError(message);
       } finally {
-        if (!isMounted) return;
-        setLoading(false);
-        setStaticLoading(false);
+        // A return here would silently override the try/catch result; just skip the updates.
+        if (isMounted) {
+          setLoading(false);
+          setStaticLoading(false);
+        }
       }
     }
 

@@ -13,10 +13,10 @@ import { useNavigate } from "react-router";
 import { useAppError } from "../../../Context/AppErrorContext.jsx";
 
 gsap.registerPlugin(SplitText, Observer)
+const API_URL = import.meta.env.VITE_API_URL;
 const toFavoriteFlag = (value) => value === true || value === "t" || value === 1 || value === "1";
 
 export function SearchBar() {
-  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const { setGlobalError } = useAppError();
 
@@ -76,7 +76,9 @@ export function SearchBar() {
         return;
       }
       try {
-        const result = await axios.get(`${API_URL}/search?q=${inputValue}`, {
+        // `params` URL-encodes the text, so &, #, + and % reach the server intact.
+        const result = await axios.get(`${API_URL}/search`, {
+          params: { q: inputValue },
           withCredentials: true,
         })
         if (result.data.length === 0) {

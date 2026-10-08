@@ -3,7 +3,6 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import styles from './ItemImage.module.css';
 import ExpandedImageOverlay from './ExpandedImageOverlay';
-import { useIsMobile } from '../../SmallComponents/IsMobileProvider';
 
 export default function ItemImage({ imgUrl, data, onClick, isCover = false }) {
   const [isLoading, setIsLoading] = useState(true);

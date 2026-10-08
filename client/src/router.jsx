@@ -4,6 +4,7 @@ import { MangaContainer } from './components/Manga/MangaContainer.jsx';
 import LoginAuthentication from './pages/Login/Authentication.jsx';
 import SignupAuthentication from './pages/Signup/Authentication.jsx';
 import { NotFound } from './pages/NotFound/NotFound.jsx';
+import { RouteError } from './pages/NotFound/RouteError.jsx';
 import {UserMenu} from './components/UserMenu/UserMenu.jsx';
 import { FavoritePage } from './pages/Manga/FavoritePage.jsx';
 import { SearchPage } from './pages/Manga/SearchPage.jsx';
@@ -12,6 +13,7 @@ const routes = [
   {
     path: '/',
     element: <RootLayout />,
+    errorElement: <RouteError />,
     children: [
       {
         // Home page - matches exactly "/"
