@@ -25,9 +25,19 @@ function readTarget() {
   return { host: url.hostname, config: { connectionString: url.toString() } };
 }
 
+// DB_SSL=false      no TLS (a local database)
+// DB_SSL=no-verify  TLS without checking the certificate (only for a provider
+//                   whose certificate is signed by its own private CA)
+// default           local hosts: no TLS; remote hosts: TLS and the certificate
+//                   must be valid, so nobody in between can pose as the database
+function sslOption(host) {
+  const mode = process.env.DB_SSL ?? (LOCAL_HOSTS.has(host) ? "false" : "verify");
+  if (mode === "false") return false;
+  return { rejectUnauthorized: mode !== "no-verify" };
+}
+
 function createPool(overrides = {}) {
   const { host, config } = readTarget();
-  const useSsl = process.env.DB_SSL !== "false" && !LOCAL_HOSTS.has(host);
 
   const pool = new pg.Pool({
     ...config,
@@ -36,7 +46,7 @@ function createPool(overrides = {}) {
     idleTimeoutMillis: 30000,
     // A cold function talking to a remote database needs more than 2 s.
     connectionTimeoutMillis: 10000,
-    ssl: useSsl ? { rejectUnauthorized: false } : false,
+    ssl: sslOption(host),
     ...overrides,
   });
 
@@ -48,7 +58,30 @@ function createPool(overrides = {}) {
   return pool;
 }
 
+// Runs `work(client)` inside one transaction on ONE connection.
+// pool.query() may pick a different connection for every call, so BEGIN,
+// the statements and COMMIT must all go through the same checked-out client.
+async function withTransaction(pool, work) {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const result = await work(client);
+    await client.query("COMMIT");
+    client.release();
+    return result;
+  } catch (error) {
+    try {
+      await client.query("ROLLBACK");
+      client.release();
+    } catch (rollbackError) {
+      // The connection is in an unknown state: throw it away, not back in the pool.
+      client.release(rollbackError);
+    }
+    throw error;
+  }
+}
+
 const db = createPool();
 
-export { createPool };
+export { createPool, withTransaction };
 export default db;

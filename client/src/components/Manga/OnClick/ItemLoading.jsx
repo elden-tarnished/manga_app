@@ -2,9 +2,8 @@ import { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import styles from './ItemLoading.module.css';
-import itemStyles from './Item.module.css'; // Import Item styles for layout matching
 
-export default function ItemLoading({ setItemLoaded, currentId, itemLoaded, isCurrentIdFromCard }) {
+export default function ItemLoading({ currentId, itemLoaded, isCurrentIdFromCard }) {
   const loadingRef = useRef(null);
   const dotBefore = useRef([]);
   const dotAfter = useRef([]);

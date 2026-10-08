@@ -5,6 +5,32 @@ import { useGSAP } from '@gsap/react'
 import { SplitText } from 'gsap/SplitText'
 import { useIsMobile } from '../SmallComponents/IsMobileProvider.jsx'
 
+function hexToRgba(hexColor, opacity) {
+  let hex = hexColor.replace('#', '')
+  if (hexColor.length < 4) {
+    hex = hexColor.split('').map(char => char + char).join('');
+  }
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  return `rgba(${r},${g},${b}, ${opacity})`;
+}
+
+
+function buildCopySpans(times, content, ref, hexEndColor, isMobile) {
+  if (isMobile) return
+
+  const contentClass = content.split(' ').join('')
+  const classname = `${contentClass}_copy`
+
+
+  return Array.from({ length: times }, (_, i) => {
+    let color = hexEndColor
+    if ((i % 2) === 0) color = '#dcc5b2'
+    return (<span key={`block-${i}`} ref={(el) => ref.current[i] = el} style={{ zIndex: `${(90 - i)}`, color: hexToRgba(color, (times - i) / times) }} className={`${styles.copy} footer${contentClass} ${styles[classname]}`}>{content}</span>)
+  })
+}
+
 export function Footer() {
   gsap.registerPlugin(SplitText)
   const year = new Date().getFullYear()
@@ -17,33 +43,8 @@ export function Footer() {
 
   const anchorTagAnimation = useRef(null)
 
-  function hexToRgba(hexColor, opacity) {
-    let hex = hexColor.replace('#', '')
-    if (hexColor.length < 4) {
-      hex = hexColor.split('').map(char => char + char).join('');
-    }
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    return `rgba(${r},${g},${b}, ${opacity})`;
-  }
-
-
-  function buildCopySpans(times, content, ref, hexEndColor) {
-    if (isMobile) return
-
-    const contentClass = content.split(' ').join('')
-    const classname = `${contentClass}_copy`
-
-
-    return Array.from({ length: times }, (_, i) => {
-      let color = hexEndColor
-      if ((i % 2) === 0) color = '#dcc5b2'
-      return (<span key={`block-${i}`} ref={(el) => ref.current[i] = el} style={{ zIndex: `${(90 - i)}`, color: hexToRgba(color, (times - i) / times) }} className={`${styles.copy} footer${contentClass} ${styles[classname]}`}>{content}</span>)
-    })
-  }
-
-  const contactCopy = useMemo(() => buildCopySpans(20, 'Contact Me', contactRef, '#faf7f3'), [])
+  // Rebuilt when the layout switches between mobile and desktop (it used to stay as first rendered).
+  const contactCopy = useMemo(() => buildCopySpans(20, 'Contact Me', contactRef, '#faf7f3', isMobile), [isMobile])
 
   const { contextSafe } = useGSAP(() => {
 

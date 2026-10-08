@@ -8,6 +8,13 @@ import { Observer } from "gsap/Observer";
 import { Heart } from "../../SmallComponents/Button/Heart.jsx";
 
 gsap.registerPlugin(useGSAP, Observer)
+// MyAnimeList has titles without a synopsis (null). slice(0, …) keeps the first
+// letter, and "..." is only added when something was actually cut off.
+function shortSynopsis(synopsis, length) {
+  if (!synopsis) return 'No synopsis yet.';
+  return synopsis.length > length ? `${synopsis.slice(0, length).trimEnd()}...` : synopsis;
+}
+
 export function MangaCard(props) {
   const {
     id,
@@ -156,8 +163,6 @@ export function MangaCard(props) {
     })
 
 
-
-    const tlCartDuration = tl1.current.duration() * 0.4;
 
     tl2.current
       .fromTo([mediaTypeRef.current, statusRef.current, meanRef.current, numVolumesRef?.current], {
@@ -383,7 +388,7 @@ export function MangaCard(props) {
             </div>
             {synopsis ? <div className='synopsis__container'>
             </div> : ''}
-            <p className='synopsis' ref={synopsisRef}>{isMobile ? synopsis.slice(1, 240) : synopsis.slice(1, 290)}...</p>
+            <p className='synopsis' ref={synopsisRef}>{shortSynopsis(synopsis, isMobile ? 240 : 290)}</p>
           </div>
         }
       </div>

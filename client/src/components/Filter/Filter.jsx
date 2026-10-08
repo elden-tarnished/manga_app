@@ -5,6 +5,9 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import './Filter.css';
 
+const limits = ['24', '50', '60', '80'];
+const directionValues = ['ASC', 'DESC'];
+
 export function Filter({ FilterOptions }) {
 
 
@@ -35,16 +38,17 @@ export function Filter({ FilterOptions }) {
     setDirection
   } = useContext(FilterContext);
 
-  const setter = {
+  // Memoised so the button lists below only rebuild when something they show changes.
+  const setter = useMemo(() => ({
     genre: setGenre,
     theme: setTheme,
     demographic: setDemographic,
     type: setType,
     explicitGenre: setExplicitGenre
-  }
-  const limits = ['24', '50', '60', '80']
-  const directionValues = ['ASC', 'DESC'];
-  const filtersKeys = Object.keys(FilterOptions).filter(e => e !== 'validOrder');
+  }), [setGenre, setTheme, setDemographic, setType, setExplicitGenre]);
+  const filtersKeys = useMemo(
+    () => Object.keys(FilterOptions).filter(e => e !== 'validOrder'),
+    [FilterOptions]);
 
   const filterRef = useRef(null);
   const filterExpandRef = useRef(null);
@@ -163,17 +167,17 @@ export function Filter({ FilterOptions }) {
     return FilterOptions.validOrder.map(item =>
       <FilterButton key={item} value={item} selectedValues={order} setter={setOrder} filterType={'order'}></FilterButton>
     )
-  }, [order]);
+  }, [FilterOptions.validOrder, order, setOrder]);
   const limitButtons = useMemo(() => {
     return limits.map(item =>
       <FilterButton key={item} value={item} selectedValues={limit} setter={setLimit} filterType={'limit'}></FilterButton>
     )
-  }, [limit]);
+  }, [limit, setLimit]);
   const directionButtons = useMemo(() => {
     return directionValues.map(item =>
       <FilterButton key={item} value={item} selectedValues={direction} setter={setDirection} filterType={'direction'}></FilterButton>
     )
-  }, [direction])
+  }, [direction, setDirection])
 
 
   //keys: demographic, type, explicitGenre, genre, theme
@@ -193,7 +197,7 @@ export function Filter({ FilterOptions }) {
         </FilterButton>))}
       </div>
     </div>)))
-  }, [tagCurrents])
+  }, [FilterOptions, filtersKeys, selectedValuesSetter, setter])
 
   return (
     <div className="filter__container"

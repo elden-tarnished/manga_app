@@ -21,7 +21,9 @@ const sessionConfig = {
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    // HTTPS-only cookie in production. Vercel is always HTTPS, so do not rely
+    // on NODE_ENV alone there.
+    secure: process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL),
     // The site and the API share one origin (/api), so Lax is enough and
     // no cross-site cookie is needed any more.
     sameSite: "lax",

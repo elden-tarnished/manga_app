@@ -71,8 +71,11 @@ export function ChangeInfo({ isOpen, onClose, onBackAnimationComplete }) {
   const timelineRef = useRef(null);
 
   // Use shared validation hooks
-  const usernameValidation = useUsernameValidation(user?.username, true);
+  const usernameValidation = useUsernameValidation(user?.username);
   const passwordValidation = usePasswordValidation();
+  // The hook objects are new on every render; their reset functions are not.
+  const { reset: resetUsername } = usernameValidation;
+  const { reset: resetPassword } = passwordValidation;
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -80,11 +83,11 @@ export function ChangeInfo({ isOpen, onClose, onBackAnimationComplete }) {
   // Reset form when opened
   useEffect(() => {
     if (isOpen && user) {
-      usernameValidation.reset(user.username);
-      passwordValidation.reset();
+      resetUsername(user.username);
+      resetPassword();
       setMessage({ type: '', text: '' });
     }
-  }, [isOpen, user]);
+  }, [isOpen, user, resetUsername, resetPassword]);
 
   // Build animation timeline with proper scope and cleanup
   const { contextSafe } = useGSAP(() => {

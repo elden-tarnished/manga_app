@@ -4,7 +4,7 @@ import { Flip } from 'gsap/Flip';
 import ItemImage from './ItemImage';
 import ImageSlideShow from './ImageSlideShow';
 import { useGSAP } from '@gsap/react';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { useIsMobile } from '../../SmallComponents/IsMobileProvider';
 
 export default function Item(props) {
@@ -14,7 +14,7 @@ export default function Item(props) {
     startDate, endDate,
     synopsis, background,
     mean, rank, popularity,
-    status, nsfw, mediaType,
+    status, mediaType,
     numChapters, numVolumes,
     serialization,
     picturesLarge,
@@ -25,13 +25,11 @@ export default function Item(props) {
     relatedManga,
     recommendedManga,
     setInnerCardId,
-    imageUrl,
     setImgUrl,
     itemLoaded,
     isCurrentIdFromCard,
     setIsCurrentIdFromCard,
     setItemLoaded,
-    currentId
   } = props;
 
 
@@ -39,6 +37,19 @@ export default function Item(props) {
   const staggerRef = useRef([]);
   const fadersRef = useRef([]);
   const isMobile = useIsMobile()
+
+  // useCallback keeps the same function between renders, so the Escape-key
+  // effect below can list it as a dependency without re-subscribing each render.
+  const backAnimation = useCallback(() => {
+    setInnerCardId(-1)
+    setItemLoaded(false);
+    document.body.style.overflow = "visible";
+    gsap.to(containerRef.current, {
+      opacity: 0,
+      duration: 0.3,
+      onComplete: () => gsap.set(containerRef.current, { display: "none" })
+    })
+  }, [setInnerCardId, setItemLoaded]);
 
   useEffect(() => {
     // Lock scroll
@@ -59,7 +70,7 @@ export default function Item(props) {
       document.body.style.overflow = "visible";
       window.removeEventListener('keydown', handleEsc);
     };
-  }, [itemLoaded]);
+  }, [itemLoaded, backAnimation]);
 
   // Entrance Animation
   useGSAP(() => {
@@ -128,18 +139,6 @@ export default function Item(props) {
       );
     })
   });
-
-  function backAnimation() {
-    setInnerCardId(-1)
-    setItemLoaded(false);
-    document.body.style.overflow = "visible";
-    gsap.to(containerRef.current, {
-      opacity: 0,
-      duration: 0.3,
-      onComplete: () => gsap.set(containerRef.current, { display: "none" })
-    })
-
-  }
 
   const startYear = startDate === null ? null : new Date(startDate).getFullYear().toString();
   const endYear = endDate === null ? null : new Date(endDate).getFullYear().toString();

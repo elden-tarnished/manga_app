@@ -3,54 +3,60 @@ import { isAuthenticated, createValidateMangaId } from "../middleware/auth.js";
 import { validateQuery } from "../middleware/validateQuery.js";
 import {
   buildSortOption,
-  sortMangaByFilters,
+  countMangaByFilters,
+  findMangaByFilters,
 } from "../services/mangaService.js";
+
+const DEFAULT_LIMIT = 50;
+const MAX_LIMIT = 200;
+
+// "abc", "-3", "0" and missing all become the fallback.
+function toPositiveInt(value, fallback) {
+  const number = Number.parseInt(value, 10);
+  return Number.isSafeInteger(number) && number >= 1 ? number : fallback;
+}
 
 function createMangaRoutes(db) {
   const router = Router();
   const validateMangaId = createValidateMangaId(db);
 
   router.get("/", validateQuery, async (req, res) => {
-    let page = parseInt(req.query.page ?? "1", 10);
-    let limit = parseInt(req.query.limit ?? "50", 10);
+    // Clean the paging input before it reaches the database, never after.
+    const limit = Math.min(toPositiveInt(req.query.limit, DEFAULT_LIMIT), MAX_LIMIT);
+    const requestedPage = toPositiveInt(req.query.page, 1);
+    const { order, direction } = req.validated;
     try {
-      const result = await sortMangaByFilters(db, req.validated, {
-        page: limit * (page - 1),
-        limit: limit,
-        order: req.validated.order,
-        direction: req.validated.direction,
+      // Count first so a page past the end can be moved to the last real page.
+      const totalCount = await countMangaByFilters(db, req.validated);
+      const maxPageNum = Math.max(1, Math.ceil(totalCount / limit));
+      const page = Math.min(requestedPage, maxPageNum);
+
+      let cPage = await findMangaByFilters(db, req.validated, {
+        limit,
+        offset: limit * (page - 1),
+        order,
+        direction,
       });
-      let favorites = new Set();
-
-      let cPage = result.cPage;
-
-      const count = result.rowCount;
-      const allPages = Math.ceil(count / limit);
-      if (Number.isNaN(page) || page > allPages || page < 1) page = 1;
-      if (Number.isNaN(limit) || limit > 200 || limit < 1) limit = 60;
 
       if (req.isAuthenticated && req.isAuthenticated()) {
-        const userId = req.user.id;
         const favoritesResult = await db.query(
           "SELECT manga_id FROM users_favorites WHERE user_id = $1",
-          [userId],
+          [req.user.id],
         );
-        favorites = new Set(favoritesResult.rows.map((i) => i.manga_id));
+        const favorites = new Set(favoritesResult.rows.map((i) => i.manga_id));
         cPage = cPage.map((e) => ({ ...e, favorites: favorites.has(e.id) }));
       }
 
-      const hasPrev = page > 1;
-      const hasNext = page < allPages;
       const orderOptions = await buildSortOption();
       res.status(200).json({
         page: cPage,
-        totalCount: count,
+        totalCount,
         pageNum: page,
-        direction: req.validated.direction,
-        maxPageNum: allPages,
+        direction,
+        maxPageNum,
         sortOption: orderOptions,
-        hasNext: hasNext,
-        hasPrev: hasPrev,
+        hasNext: page < maxPageNum,
+        hasPrev: page > 1,
       });
     } catch (err) {
       console.error("error fetching manga: ", err.message);
@@ -237,7 +243,7 @@ function createMangaRoutes(db) {
 
             FROM manga m 
             JOIN related_manga rm ON m.id = rm.related_manga_id
-            WHERE rm.manga_id = $1`,
+            WHERE rm.manga_id = $1 AND m.title IS NOT NULL`,
         [mangaId],
       );
 
@@ -259,7 +265,7 @@ function createMangaRoutes(db) {
             m.rank, m.mean, m.popularity, m.status, m.media_type, m.num_volumes, m.num_chapters
             FROM manga m
             JOIN recommendation rec ON m.id = rec.recommendation_id
-            WHERE rec.manga_id = $1`,
+            WHERE rec.manga_id = $1 AND m.title IS NOT NULL`,
         [mangaId],
       );
 

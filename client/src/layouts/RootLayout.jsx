@@ -1,37 +1,15 @@
-/* eslint-disable no-unused-vars */
 import {useRef} from 'react';
 import { useOutlet, useLocation } from 'react-router';
-import { AnimatePresence, motion } from 'framer-motion';
+// LazyMotion + `m` (imported as Motion) ship only the animation features used here (domAnimation)
+// instead of the whole library that `motion` pulls in.
+import { AnimatePresence, LazyMotion, domAnimation, m as Motion } from 'framer-motion';
 import { Footer } from '../components/Footer/Footer.jsx';
-import { IsMobileProvider, useIsMobile } from '../components/SmallComponents/IsMobileProvider.jsx';
+import { IsMobileProvider } from '../components/SmallComponents/IsMobileProvider.jsx';
 import { AppErrorProvider, useAppError } from '../Context/AppErrorContext.jsx';
 import styles from './RootLayout.module.css';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 
-
-// COMMENTING OUT OLD TRANSITION AS REQUESTED
-// const pageTransition = {
-//   initial: {
-//     opacity: 0,
-//   },
-//   animate: {
-//     opacity: 1,
-//     y: 0,
-//     transition: {
-//       duration: 0.3,
-//       ease: 'easeOut'
-//     }
-//   },
-//   exit: {
-//     x: 100,
-//     opacity: 0,
-//     transition: {
-//       duration: 0.2,
-//       ease: 'easeIn'
-//     }
-//   }
-// };
 
 const expandTransition = {
   initial: {
@@ -60,7 +38,6 @@ const expandTransition = {
 
 function LayoutContent() {
   const location = useLocation();
-  const isMobile = useIsMobile()
   const currentOutlet = useOutlet();
   const { errorState, clearGlobalError } = useAppError();
 
@@ -109,8 +86,9 @@ function LayoutContent() {
           <p className={styles.globalErrorText}>{errorState.message}</p>
         </div>
       )}
+      <LazyMotion features={domAnimation} strict>
       <AnimatePresence mode="wait">
-        <motion.main
+        <Motion.main
           className={styles.main}
           key={location.pathname}
           initial="initial"
@@ -137,7 +115,7 @@ function LayoutContent() {
           }}>
             {
               [...Array(9)].map((_, i) => (
-                <motion.div
+                <Motion.div
                   key={i}
                   custom={i}
                   variants={expandTransition}
@@ -156,8 +134,9 @@ function LayoutContent() {
 
           {/* Render the captured element instead of the live <Outlet /> */}
           {currentOutlet}
-        </motion.main>
+        </Motion.main>
       </AnimatePresence>
+      </LazyMotion>
       {isAuthPage && <Footer />}
     </div>
   );
@@ -171,21 +150,4 @@ export function RootLayout() {
       </AppErrorProvider>
     </IsMobileProvider>
   );
-}
-export function AuthenticationLayout() {
-  const location = useLocation()
-  const currentOutlet = useOutlet()
-  return (
-    <AnimatePresence mode='wait'>
-      <motion.div
-        key={location.pathname}
-        // variants={pageTransition} // Commented out to match style, though mostly focused on RootLayout
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      >
-        {currentOutlet}
-      </motion.div>
-    </AnimatePresence>
-  )
 }

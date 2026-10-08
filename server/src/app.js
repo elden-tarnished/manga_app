@@ -38,7 +38,10 @@ app.get(["/api/health", "/health"], async (_req, res) => {
     await db.query("select 1");
     res.json({ ok: true, database: true });
   } catch (error) {
-    res.status(503).json({ ok: false, database: false, error: error.message });
+    // The reason goes to the function logs only: the raw message can name the
+    // database host and user, which visitors have no business seeing.
+    console.error("health check failed:", error.message);
+    res.status(503).json({ ok: false, database: false });
   }
 });
 
@@ -53,5 +56,20 @@ api.use("/", createSearchRoutes(db));
 // Local dev keeps working with the old unprefixed paths.
 app.use("/api", api);
 app.use("/", api);
+
+// Unknown API URL: answer in JSON like every other route, not Express's HTML page.
+app.use((_req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
+
+// Anything a route passes to next(err) or throws. Express 5 also catches
+// rejected promises from async handlers and sends them here.
+app.use((err, _req, res, _next) => {
+  const status = err.status >= 400 && err.status < 500 ? err.status : 500;
+  if (status === 500) console.error("unhandled error:", err);
+  res.status(status).json({
+    error: status === 500 ? "Internal server error" : "Bad request",
+  });
+});
 
 export default app;
