@@ -1,22 +1,11 @@
     import "../../config/env.js";
-    import pg from "pg";
     import fs from "fs";
     import path from "path";
     import { fileURLToPath } from "url";
+    import db from "../../config/db.js";
 
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
-
-    const db = new pg.Pool({
-        user: process.env.DB_USER,
-        host: process.env.DB_HOST,
-        database: process.env.DB_DATABASE,
-        password: process.env.DB_PASSWORD,
-        port : process.env.DB_PORT,
-        max: 5,
-        idleTimeoutMillis: 30* 1000,
-        connectionTimeoutMillis: 2 * 1000
-    });
 
     const missingGenre = path.resolve(__dirname, '../../texts/missing_genre.log');
     function writer(item) {

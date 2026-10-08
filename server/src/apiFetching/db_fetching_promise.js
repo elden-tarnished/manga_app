@@ -3,9 +3,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import axios from "axios";
 import env from "dotenv";
-import pg from "pg";
 import pLimit from "p-limit";
 import chalk from "chalk";
+import { createPool } from "../config/db.js";
 import {
   BadRequestError,
   ForbiddonError,
@@ -29,16 +29,8 @@ env.config({ path: __envPath });
 
 const __failedUrlsPath = path.resolve(__dirname, "../texts/failedUrls.txt");
 
-const db = new pg.Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-  max: 9,
-  idleTimeoutMillis: 30 * 1000,
-  connectionTimeoutMillis: 5 * 1000,
-});
+// Shares the DATABASE_URL / DB_* handling (and SSL rules) with the API.
+const db = createPool({ max: 9, connectionTimeoutMillis: 15 * 1000 });
 
 db.on("connect", () => {
   log("Database pool connected");
@@ -557,7 +549,10 @@ async function main() {
   try {
     const arr = await addNullIdsFromDb();
     console.log(`Found ${arr.length} manga with null titles to process.`);
-    await dbSaverArray({ array: arr, batch: 3, plimit: 3 });
+    // Tunable because a remote database makes each title slow (many small writes).
+    const batch = Number(process.env.ETL_BATCH ?? 3);
+    const plimit = Number(process.env.ETL_CONCURRENCY ?? 3);
+    await dbSaverArray({ array: arr, batch, plimit });
     log("Running genreHandling...");
     genreHandling();
   } catch (err) {
