@@ -1,16 +1,18 @@
 {
   "name": "manga_site",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test test/",
+    "test:db": "docker run --rm -d --name manga-test-pg -e POSTGRES_PASSWORD=test -e POSTGRES_DB=manga_test -p 127.0.0.1:55432:5432 --tmpfs /var/lib/postgresql/data postgres:16-alpine",
+    "test:db:stop": "docker stop manga-test-pg"
   },
   "author": "elden_tarnished",
   "license": "ISC",
-  "description": "",
+  "description": "REST API for Mangaso: manga browsing, search, accounts and favorites (Express 5 + PostgreSQL)",
   "dependencies": {
     "argon2": "^0.43.0",
     "body-parser": "^2.2.0",

@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 import db from "../src/config/db.js";
 
 const sqlDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../src/sql");
-const files = ["structure.sql", "users.sql", "sessions.sql"];
+const files = ["structure.sql", "users.sql", "sessions.sql", "rate_limit.sql"];
 const DUPLICATE_TABLE = "42P07";
 
 try {

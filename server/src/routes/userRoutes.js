@@ -1,8 +1,15 @@
 import { Router } from "express";
 import argon2 from "argon2";
+import { withTransaction } from "../config/db.js";
 import { argon2Options, pepper } from "../config/security.js";
 import { isAuthenticated } from "../middleware/auth.js";
-import { validatePassword, validateUsername } from "../utils/validation.js";
+import {
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from "../utils/validation.js";
+
+const UNIQUE_VIOLATION = "23505";
 
 function createUserRoutes(db) {
   const router = Router();
@@ -61,8 +68,8 @@ function createUserRoutes(db) {
           return res.status(400).json({ error: usernameValidation.error });
         }
 
-        updateStatements.push(() =>
-          db.query("UPDATE users SET username = $1 WHERE id = $2", [
+        updateStatements.push((client) =>
+          client.query("UPDATE users SET username = $1 WHERE id = $2", [
             newUsername,
             userId,
           ]),
@@ -72,6 +79,11 @@ function createUserRoutes(db) {
 
       if (updates.email) {
         const newEmail = updates.email;
+
+        const emailValidation = validateEmail(newEmail);
+        if (!emailValidation.valid) {
+          return res.status(400).json({ error: emailValidation.error });
+        }
 
         if (user.email === newEmail) {
           return res
@@ -89,8 +101,8 @@ function createUserRoutes(db) {
             .json({ error: "email already used try again." });
         }
 
-        updateStatements.push(() =>
-          db.query("UPDATE users SET email = $1 where id = $2", [
+        updateStatements.push((client) =>
+          client.query("UPDATE users SET email = $1 WHERE id = $2", [
             newEmail,
             userId,
           ]),
@@ -127,8 +139,8 @@ function createUserRoutes(db) {
           newPlainTextPass,
           argon2Options,
         );
-        updateStatements.push(() =>
-          db.query("UPDATE users SET password = $1 WHERE id = $2", [
+        updateStatements.push((client) =>
+          client.query("UPDATE users SET password = $1 WHERE id = $2", [
             hashedPassword,
             userId,
           ]),
@@ -143,25 +155,24 @@ function createUserRoutes(db) {
           .json({ error: "No fields provided for update or no changes made." });
       }
 
-      await db.query("BEGIN");
-      for (const statement of updateStatements) {
-        await statement();
-      }
-      await db.query("COMMIT");
+      // All changes or none: one connection, one transaction.
+      await withTransaction(db, async (client) => {
+        for (const statement of updateStatements) {
+          await statement(client);
+        }
+      });
       return res.status(200).json({
         message: "User updated successfully",
         updateFields: updateFields,
       });
     } catch (err) {
-      try {
-        await db.query("ROLLBACK");
-      } catch (rollbackError) {
-        console.error(`ROLLBACK failed at patchign user data`, rollbackError);
+      // Someone else took the name / email between the check above and the update.
+      if (err.code === UNIQUE_VIOLATION) {
         return res
-          .status(500)
-          .json({ error: "Failed saving user data to database." });
+          .status(400)
+          .json({ error: "That username or email was just taken, try another." });
       }
-      console.error("Error patching user ID: ", err);
+      console.error("Error patching user ID: ", err.message);
       return res.status(500).json({ error: "Internal server error." });
     }
   });
@@ -227,7 +238,9 @@ function createUserRoutes(db) {
     }
   });
 
-  router.post("/validate-password", isAuthenticated, async (req, res) => {
+  // Public on purpose: the signup page checks the password before an account
+  // exists. It only runs the rules below and never touches the database.
+  router.post("/validate-password", (req, res) => {
     const { password } = req.body;
 
     const result = validatePassword(password);

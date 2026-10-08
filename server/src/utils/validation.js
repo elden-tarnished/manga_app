@@ -64,3 +64,22 @@ export function validateUsername(username) {
 
     return { valid: true, error: null };
 }
+
+// Deliberately loose: one "@", something on both sides, a dot in the domain.
+// The real check is whether mail arrives; this only catches typos.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Validates an email address format
+ * @param {string} email - The email to validate
+ * @returns {{ valid: boolean, error: string | null }}
+ */
+export function validateEmail(email) {
+    if (typeof email !== 'string' || !email) {
+        return { valid: false, error: 'Email is required' };
+    }
+    if (email.length > 254 || !EMAIL_PATTERN.test(email)) {
+        return { valid: false, error: 'Please enter a valid email address' };
+    }
+    return { valid: true, error: null };
+}

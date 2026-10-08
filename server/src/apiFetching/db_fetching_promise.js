@@ -5,7 +5,7 @@ import axios from "axios";
 import env from "dotenv";
 import pLimit from "p-limit";
 import chalk from "chalk";
-import { createPool } from "../config/db.js";
+import sharedDb, { createPool } from "../config/db.js";
 import {
   BadRequestError,
   ForbiddonError,
@@ -41,7 +41,8 @@ db.on("error", (error) => {
 });
 
 const config = {
-  timeout: 7000,
+  // MyAnimeList can take 10+ s to answer over a slow VPN; tune with ETL_TIMEOUT_MS.
+  timeout: Number(process.env.ETL_TIMEOUT_MS ?? 20000),
   headers: {
     "X-MAL-CLIENT-ID": process.env.CLIENT_ID,
   },
@@ -68,8 +69,13 @@ function minute(Milliseconds) {
   return Milliseconds * 1000 * 60;
 }
 
+// One URL per line. Start on a new line if the file does not end with one,
+// otherwise the first URL of this run is glued to the last URL of the previous run.
 function writeFailedUrls(array) {
-  fs.appendFileSync(__failedUrlsPath, array.join("\n"));
+  if (array.length === 0) return;
+  const existing = fs.existsSync(__failedUrlsPath) ? fs.readFileSync(__failedUrlsPath, "utf8") : "";
+  const prefix = existing && !existing.endsWith("\n") ? "\n" : "";
+  fs.appendFileSync(__failedUrlsPath, prefix + array.join("\n") + "\n");
 }
 
 function urlMaker(array) {
@@ -302,7 +308,7 @@ async function writeMAL_To_DB(url) {
       );
     }
 
-    let alreadyExist = false;
+    let insertedNewPictures = false;
     if (Array.isArray(pictures_arr) && pictures_arr.length > 0) {
       const picturePlaceholder = pictures_arr
         .map((_, i) => `($${i * 2 + 1}, $${i * 2 + 2})`)
@@ -327,7 +333,7 @@ async function writeMAL_To_DB(url) {
         id,
       ]);
       if (rows.length > 0) {
-        alreadyExist = rows[0].did_insert;
+        insertedNewPictures = rows[0].did_insert;
       }
     }
 
@@ -403,7 +409,7 @@ async function writeMAL_To_DB(url) {
     }
 
     await dbClient.query("COMMIT");
-    if (alreadyExist) {
+    if (insertedNewPictures) {
       log(
         color.dbSuccess(`insertion was successful: ${url?.split("/").pop()}\n`),
       );
@@ -533,7 +539,7 @@ async function dbSaverArray({ array, batch, plimit }) {
     }
     log(
       color.dbMutual(
-        `✅ batch ${i + 1}/${batchArr.length}, ${array.length - i + 1} left`,
+        `✅ batch ${i + 1}/${batchArr.length}, ${batchArr.length - i - 1} batches left`,
       ),
     );
     await sleep(sleepAfterBatch);
@@ -554,13 +560,16 @@ async function main() {
     const plimit = Number(process.env.ETL_CONCURRENCY ?? 3);
     await dbSaverArray({ array: arr, batch, plimit });
     log("Running genreHandling...");
-    genreHandling();
+    // Awaited: otherwise main() moves on to closing the pools while it still runs.
+    await genreHandling();
   } catch (err) {
     errorLogger(
       color.dbBrakingError("Critical error in main() :", err.message),
     );
   } finally {
-    db.end();
+    await db.end();
+    // genreHandling() uses the shared API pool; close it too so the script exits.
+    await sharedDb.end();
   }
 }
 

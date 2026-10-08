@@ -94,7 +94,12 @@
             return setCache.get(type);
         }
         const validData = db.query(`SELECT name FROM genre WHERE type=$1`, [type])
-            .then(item => new Set(item.rows.map(e => e.name)))
+            .then(item => {
+                // Empty means the import has not typed the genres yet: ask again next time
+                // instead of remembering "no genres" for the life of this instance.
+                if (item.rows.length === 0) setCache.delete(type);
+                return new Set(item.rows.map(e => e.name));
+            })
             .catch(err => {
                 console.error(`Error fetchign ${type} set: `, err);
                 setCache.delete(type);

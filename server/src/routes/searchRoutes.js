@@ -1,15 +1,23 @@
 import { Router } from "express";
 
+// In LIKE / ILIKE, % and _ are wildcards and \ escapes them. Escape all three
+// so a visitor's text is matched literally ("100%" must not mean "100 + anything").
+function escapeLike(text) {
+  return text.replace(/[\\%_]/g, "\\$&");
+}
+
 function createSearchRoutes(db) {
   const router = Router();
 
   router.get("/search", async (req, res) => {
     try {
-      const query = req.query.q;
+      // ?q=a&q=b or ?q[x]=1 arrive as an array / object; only plain text is allowed.
+      const rawQuery = typeof req.query.q === "string" ? req.query.q.trim() : "";
       const userId = req.isAuthenticated && req.isAuthenticated() ? req.user.id : null;
-      if (!query) {
+      if (!rawQuery) {
         return res.status(400).json({ error: 'Search query "q" is needed ' });
       }
+      const query = escapeLike(rawQuery.slice(0, 100));
       const selectedColumns = `
         m.id,
         m.main_picture_medium,
@@ -41,7 +49,7 @@ function createSearchRoutes(db) {
           `
           SELECT ${selectedColumns}
           FROM manga m
-          WHERE m.search_title_lower ILIKE '%' || LOWER($1) || '%'
+          WHERE m.search_title_lower ILIKE '%' || LOWER($1) || '%' AND m.title IS NOT NULL
           ORDER BY popularity ASC
           LIMIT 24
           `,
@@ -59,7 +67,7 @@ function createSearchRoutes(db) {
         `
         SELECT COUNT(*)::int AS count
         FROM manga m
-        WHERE m.search_title_lower ILIKE '%' || LOWER($1) || '%'
+        WHERE m.search_title_lower ILIKE '%' || LOWER($1) || '%' AND m.title IS NOT NULL
         `,
         [query],
       );
@@ -72,7 +80,7 @@ function createSearchRoutes(db) {
         `
         SELECT ${selectedColumns}
         FROM manga m
-        WHERE m.search_title_lower ILIKE '%' || LOWER($1) || '%'
+        WHERE m.search_title_lower ILIKE '%' || LOWER($1) || '%' AND m.title IS NOT NULL
         ORDER BY popularity ASC
         LIMIT $3
         OFFSET $4
